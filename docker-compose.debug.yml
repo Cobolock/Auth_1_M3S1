@@ -1,0 +1,38 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:16-alpine
+    env_file:
+      - ./.env.prod
+    ports:
+      - "5432:5432"
+    expose:
+      - "5432"
+    deploy:
+      restart_policy:
+        condition: always
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    expose:
+      - "6379"
+    depends_on:
+      - db
+    deploy:
+      restart_policy:
+        condition: on-failure
+  
+  # auth-service:
+  #   build:
+  #     context: ./src
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "8000:8000"
+  #   expose:
+  #     - "8000"
+  #   depends_on:
+  #     - redis
+  #   env_file:
+  #     - ./.env.prod

@@ -1,0 +1,26 @@
+# Editors
+.vscode
+.idea
+
+# Compiled
+__pycache__
+*.py[cod]
+
+# Distribution
+.Python
+build/
+dist/
+lib/
+lib64/
+
+# Environment
+.env
+.env.prod
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Ruff linter
+.ruff_cache/
