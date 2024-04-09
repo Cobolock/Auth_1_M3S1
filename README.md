@@ -2,37 +2,68 @@
 
 ## Installation
 
-1. If you don't have `Poetry` installed run:
+1. Create and activate virtual environment based on Python 3.12.
+
+2. If you don't have `Poetry` installed run:
 
 ```bash
 make poetry-download
 ```
 
-2. Initialize poetry and install `pre-commit` hooks:
+3. Initialize poetry and install `pre-commit` hooks:
 
 ```bash
 make install
 make pre-commit-install
 ```
 
-3. Prepare environment variables:
+4. Run formatters, and linters. Make sure there is no errors.
+
+```bash
+make format lint
+```
+
+## Run
+Prepare environment variables:
 
 ```bash
 cp .env.example .env
 cp infra/postgres/.env.example infra/postgres/.env
 ```
 
-3. Run formatters, linters, and tests. Make sure there is no errors.
+### Run API locally
 
+1. Run infrastructure (databases) in Docker:
+```
+docker compose -f docker-compose.debug.yml up -d --scale auth-api=0
+```
+
+2. Run API:
 ```bash
-make format lint test
+make up
 ```
 
-### Docker
-
-Run infrastructure in Docker:
+To stop:
+```bash
+docker compose -f docker-compose.debug.yml down
 ```
 
+### Run everything in Docker
+
+Run all services in Docker:
+```
+docker compose -f docker-compose.debug.yml up -d --build
+```
+
+To stop:
+```bash
+docker compose -f docker-compose.debug.yml down
+```
+
+### Run in Docker with production image
+
+```
+docker compose up -d --build
 ```
 
 ### Makefile usage
