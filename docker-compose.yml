@@ -15,10 +15,10 @@ services:
     deploy:
       restart_policy:
         condition: on-failure
-  
+
   auth-service:
     build:
-      context: ./src
+      context: .
       dockerfile: Dockerfile
     ports:
       - "8000:8000"
