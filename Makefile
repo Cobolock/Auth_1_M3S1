@@ -12,7 +12,7 @@ TESTS = tests
 
 .PHONY: api
 api:
-	uvicorn auth.main:app --reload
+	poetry run uvicorn auth.main:app --reload
 
 #* Poetry
 .PHONY: poetry-download
