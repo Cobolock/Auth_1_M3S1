@@ -1,30 +1,48 @@
 version: '3.8'
+
 services:
-  db:
+  postgres:
     image: postgres:16-alpine
     env_file:
-      - ./.env.prod
-    deploy:
-      restart_policy:
-        condition: always
-
-  redis:
-    image: redis:alpine
-    depends_on:
-      - db
+      - infra/postgres/.env
+    volumes:
+      - postgres-data:/data/postgres
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U auth_user -d auth_db" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     deploy:
       restart_policy:
         condition: on-failure
-  
-  auth-service:
+        delay: 5s
+        max_attempts: 3
+
+  redis:
+    image: redis:7-alpine
+    command: redis-server --save 60 1 --loglevel warning
+    volumes:
+      - redis-data:/data
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+
+  auth-api:
     build:
-      context: ./src
-      dockerfile: Dockerfile
+      context: .
+      target: production
+    env_file:
+      - .env.docker
+    volumes:
+      - .:/app
     ports:
       - "8000:8000"
-    expose:
-      - "8000"
     depends_on:
-      - redis
-    env_file:
-      - ./.env.prod
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres-data:
+  redis-data:
