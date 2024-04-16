@@ -6,7 +6,7 @@ from auth.models.role import Role
 from auth.schemas.role import RoleCreate, RoleRead, RoleUpdate
 from auth.services.role import RoleService
 
-router = APIRouter(tags=["Роли"])
+router = APIRouter()
 
 
 @router.post(

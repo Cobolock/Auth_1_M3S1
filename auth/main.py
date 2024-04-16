@@ -33,7 +33,7 @@ app = FastAPI(
     default_response_class=ORJSONResponse,
     debug=True,
 )
-app.include_router(roles_router, prefix="/api/v1/roles")
+app.include_router(roles_router, prefix="/api/v1/roles", tags=["Роли"])
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000)  # noqa: S104
