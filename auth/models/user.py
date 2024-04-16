@@ -1,20 +1,17 @@
-from datetime import UTC, datetime
-
-from sqlalchemy import DateTime
 from sqlalchemy.orm import Mapped, mapped_column
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from auth.db.postgres import UUIDBase
+from auth.models.base import Base
+from auth.models.mixins import AuditMixin, UUIDPrimaryKeyMixin
 
 
-class User(UUIDBase):
+class User(Base, UUIDPrimaryKeyMixin, AuditMixin):
     __tablename__ = "users"
 
     login: Mapped[str] = mapped_column(unique=True)
     password: Mapped[str]
     first_name: Mapped[str | None]
     last_name: Mapped[str | None]
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.now(UTC))
 
     def __init__(
         self, login: str, password: str, first_name: str | None = None, last_name: str | None = None

@@ -13,6 +13,7 @@ from auth.db.redis import redis
 @asynccontextmanager
 async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
     # Импорт моделей необходим для их автоматического создания
+    from auth.models.role import Role  # noqa: F401
     from auth.models.user import User  # noqa: F401
 
     await create_database()
