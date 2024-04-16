@@ -8,6 +8,7 @@ class UserCreate(BaseModel):
     password: str
     first_name: str | None
     last_name: str | None
+    enabled: bool
 
 
 class UserInDB(BaseModel):

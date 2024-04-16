@@ -1,19 +1,21 @@
-from fastapi import APIRouter, Depends
+from http import HTTPStatus
+from fastapi import APIRouter, Depends, HTTPException
 
 from auth.schemas.user import UserCreate
-from auth.models.user import User, get_user_service
+from auth.models.user import User
+from auth.services.user import UserService, get_user_service
 
 router = APIRouter()
 
 
-@router.post("/", response_model=UserCreate)
+@router.post("/", status_code=HTTPStatus.CREATED)
 async def new_user(
     username: str,
     password: str,
     # params: dict = Depends(UserCreate),
-    # user_service: User = Depends(get_user_service)
+    user_service: UserService = Depends(get_user_service),
 ) -> dict:
-    new_user = User(username, password)
-    bl = await new_user.create_user()
-    print(bl)
-    return new_user
+    status = await user_service.create(username, password)
+    if status:
+        return {"detail": "Created"}
+    raise HTTPException(status_code=HTTPStatus.CONFLICT, detail="Username in use")

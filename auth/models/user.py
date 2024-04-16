@@ -16,6 +16,7 @@ class User(UUIDBase):
     first_name: Mapped[str | None]
     last_name: Mapped[str | None]
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.now(UTC))
+    enabled: Mapped[bool]
 
     def __init__(
         self,
@@ -23,24 +24,16 @@ class User(UUIDBase):
         password: str,
         first_name: str | None = None,
         last_name: str | None = None,
+        enabled: bool | None = True,
     ) -> None:
         self.username = username
         self.password = generate_password_hash(password)
         self.first_name = first_name
         self.last_name = last_name
+        self.enabled = enabled
 
     def check_password(self, password: str) -> bool:
         return check_password_hash(self.password, password)
-
-    async def create_user(self) -> bool:
-        session = [s async for s in get_session()][0]
-        session.add(self)
-        try:
-            await session.commit()
-            return True
-        except:
-            raise
-            return False
 
     def __repr__(self) -> str:
         return f"<User {self.username}>"
