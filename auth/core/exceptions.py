@@ -42,7 +42,7 @@ class ObjectNotFoundError(ApplicationError):
 
     def __init__(self, obj_class: type | None) -> None:
         obj_name = obj_class.__name__ if obj_class is not None else "Object"
-        super().__init__(detail=f"{obj_name} already exists")
+        super().__init__(detail=f"{obj_name} not found")
 
 
 class RoleDeletionProhibitedError(ApplicationError):

@@ -35,9 +35,10 @@ class RoleRepository:
     async def get_all(self) -> list[Role]:
         return list(await self._session.scalars(select(Role)))
 
-    async def update(self, role: Role) -> None:
+    async def update(self, role: Role) -> Role:
         await self._session.merge(role)
         await self._session.commit()
+        return role
 
     async def delete(self, role: Role) -> None:
         await self._session.delete(role)

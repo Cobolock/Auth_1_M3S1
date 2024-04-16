@@ -6,6 +6,7 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 
+from auth.api.v1.roles import router as roles_router
 from auth.db.fixtures import create_roles
 from auth.db.postgres import create_database
 from auth.db.redis import redis
@@ -26,12 +27,13 @@ async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
 
 app = FastAPI(
     title="Change_to_var",
-    docs_url="/api/openapi",
+    docs_url="/api/docs",
     lifespan=lifespan,
     openapi_url="/api/openapi.json",
     default_response_class=ORJSONResponse,
     debug=True,
 )
+app.include_router(roles_router, prefix="/api/v1/roles")
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000)  # noqa: S104

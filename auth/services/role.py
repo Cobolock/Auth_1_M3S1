@@ -1,5 +1,7 @@
 from typing import Annotated
 
+from dataclasses import dataclass
+
 from fastapi import Depends
 
 from auth.core.exceptions import RoleDeletionProhibitedError
@@ -8,7 +10,8 @@ from auth.repositories.role import RoleRepository
 from auth.schemas.role import RoleCreate, RoleUpdate
 
 
-class UserRoleService:
+@dataclass
+class RoleService:
     _role_repo: Annotated[RoleRepository, Depends()]
 
     async def create_role(self, role_data: RoleCreate) -> Role:
@@ -21,10 +24,10 @@ class UserRoleService:
     async def get_all_roles(self) -> list[Role]:
         return await self._role_repo.get_all()
 
-    async def update_role_by_id(self, role_id: str, role_data: RoleUpdate) -> None:
+    async def update_role_by_id(self, role_id: str, role_data: RoleUpdate) -> Role:
         role = await self._role_repo.get(role_id)
         role.name = role_data.name
-        await self._role_repo.update(role)
+        return await self._role_repo.update(role)
 
     async def delete_role_by_id(self, role_id: str) -> None:
         role = await self._role_repo.get(role_id)

@@ -19,6 +19,7 @@ asyncpg = "^0.29.0"
 alembic = "^1.13.1"
 pydantic-settings = "^2.2.1"
 werkzeug = "^3.0.2"
+orjson = "^3.10.1"
 
 [tool.poetry.group.dev.dependencies]  # https://python-poetry.org/docs/master/managing-dependencies/
 mypy = "^1.9.0"
