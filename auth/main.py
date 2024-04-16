@@ -6,6 +6,7 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 
+from auth.db.fixtures import create_roles
 from auth.db.postgres import create_database
 from auth.db.redis import redis
 
@@ -17,6 +18,7 @@ async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
     from auth.models.user import User  # noqa: F401
 
     await create_database()
+    await create_roles()
     await redis.initialize()
     yield
     await redis.close()
