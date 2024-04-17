@@ -16,9 +16,7 @@ auth_dep = AuthJWTBearer()
 
 @router.post("/", status_code=HTTPStatus.CREATED)
 async def new_user(
-    credentials: Credentials,
-    # params: dict = Depends(UserCreate),
-    user_service: UserService = Depends(get_user_service),
+    credentials: Credentials, user_service: UserService = Depends(get_user_service)
 ) -> dict:
     status = await user_service.create(credentials)
     if status:
