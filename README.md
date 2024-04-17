@@ -40,7 +40,7 @@ docker compose -f docker-compose.debug.yml up -d --scale auth-api=0
 
 2. Run API:
 ```bash
-make up
+make api
 ```
 
 To stop:
