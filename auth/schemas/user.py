@@ -15,3 +15,8 @@ class UserInDB(BaseModel):
     id: UUID
     first_name: str | None
     last_name: str | None
+
+
+class Credentials(BaseModel):
+    username: str
+    password: str

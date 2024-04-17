@@ -6,6 +6,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from auth.db.postgres import UUIDBase, get_session
+from auth.core.config import extra_config
 
 
 class User(UUIDBase):
@@ -27,13 +28,13 @@ class User(UUIDBase):
         enabled: bool | None = True,
     ) -> None:
         self.username = username
-        self.password = generate_password_hash(password)
+        self.password = generate_password_hash(password + extra_config.salt)
         self.first_name = first_name
         self.last_name = last_name
         self.enabled = enabled
 
     def check_password(self, password: str) -> bool:
-        return check_password_hash(self.password, password)
+        return check_password_hash(self.password, password + extra_config.salt)
 
     def __repr__(self) -> str:
         return f"<User {self.username}>"

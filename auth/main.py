@@ -15,6 +15,7 @@ from auth.db.redis import redis
 async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
     # Импорт моделей необходим для их автоматического создания
     from auth.models.user import User  # noqa: F401
+    from auth.services.jwt import get_config  # noqa: F401
 
     await create_database()
     await redis.initialize()
@@ -31,8 +32,6 @@ app = FastAPI(
     debug=True,
 )
 
-# app.include_router(roles.router, prefix='/api/v1/roles', tags=['roles'])
-# app.include_router(users.router, prefix='/api/v1/users', tags=['users'])
 app.include_router(user.router, prefix="/api/v1/user", tags=["user"])
 
 if __name__ == "__main__":
