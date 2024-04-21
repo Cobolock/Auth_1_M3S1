@@ -1,13 +1,11 @@
 from http import HTTPStatus
 from fastapi import APIRouter, Depends, HTTPException
-from fastapi.responses import JSONResponse
 
-from auth.schemas.user import UserCreate, Credentials
-from auth.models.user import User
+from auth.schemas.user import Credentials
 from auth.services.user import UserService, get_user_service
 
 from async_fastapi_jwt_auth import AuthJWT
-from async_fastapi_jwt_auth.exceptions import AuthJWTException, JWTDecodeError
+from async_fastapi_jwt_auth.exceptions import JWTDecodeError
 from async_fastapi_jwt_auth.auth_jwt import AuthJWTBearer
 
 router = APIRouter()
