@@ -1,12 +1,11 @@
-from typing import List
 from sqlalchemy import ForeignKey
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from auth.core.config import extra_config
-from auth.models.role import Role
 from auth.models.base import Base
 from auth.models.mixins import AuditMixin, UUIDPrimaryKeyMixin
+from auth.models.role import Role  # noqa: TCH001
 
 
 class User(Base, UUIDPrimaryKeyMixin, AuditMixin):
@@ -16,7 +15,7 @@ class User(Base, UUIDPrimaryKeyMixin, AuditMixin):
     password: Mapped[str]
     first_name: Mapped[str | None]
     last_name: Mapped[str | None]
-    roles: Mapped[List["Role"] | None] = mapped_column(ForeignKey("roles.id"))
+    roles: Mapped[list["Role"] | None] = mapped_column(ForeignKey("roles.id"))
     enabled: Mapped[bool | None]
 
     def __init__(
