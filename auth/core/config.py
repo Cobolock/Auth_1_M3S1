@@ -13,7 +13,7 @@ class PostgresConfig(BaseSettings):
     password: str = Field(..., alias="POSTGRES_PASSWORD")
     db: str = Field("auth_db", alias="POSTGRES_DB")
     host: str = Field("127.0.0.1", alias="DB_HOST")
-    port: int = Field(6379, alias="DB_PORT")
+    port: int = Field(5432, alias="DB_PORT")
 
 
 class RedisConfig(BaseSettings):

@@ -6,7 +6,8 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 
-from auth.api.v1 import roles, user, users
+# from auth.api.v1 import roles, user, users
+from auth.api.v1 import user
 from auth.db.postgres import create_database
 from auth.db.redis import redis
 
