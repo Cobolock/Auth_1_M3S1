@@ -4,13 +4,19 @@ from pydantic import BaseModel
 
 
 class UserCreate(BaseModel):
-    login: str
+    username: str
     password: str
-    first_name: str
-    last_name: str
+    first_name: str | None
+    last_name: str | None
+    enabled: bool
 
 
 class UserInDB(BaseModel):
     id: UUID
-    first_name: str
-    last_name: str
+    first_name: str | None
+    last_name: str | None
+
+
+class Credentials(BaseModel):
+    username: str
+    password: str
