@@ -34,6 +34,10 @@ class RoleService:
         self.check_role_allowed_to_delete(role)
         await self._role_repo.delete(role)
 
+    # async def get_permissions_by_role_id(self, role_id: str) -> Permission:
+    #     role =  self._role_repo.get(role_id)
+    #     return await role.permissions.get_all()
+
     @staticmethod
     def check_role_allowed_to_delete(role: Role) -> None:
         if role.id == "admin":
