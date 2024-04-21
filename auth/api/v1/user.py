@@ -26,11 +26,11 @@ async def user_login(
 ) -> dict:
     """Проверить логин и пароль, выдать в ответ JWT."""
     jwt = await user_service.login(credentials)
-    return {"access_token": jwt.AT, "refresh_token": jwt.RT}
+    return jwt.format()
 
 
 @router.post("/refresh")
-async def user_refresh(refresh_token: str, user_service: Annotated[UserService, Depends()]):
+async def user_refresh(refresh_token: str, user_service: Annotated[UserService, Depends()]) -> dict:
     """Обновить Refresh Token, если он валидный."""
     jwt = await user_service.refresh(refresh_token)
-    return {"access_token": jwt.AT, "refresh_token": jwt.RT}
+    return jwt.format()

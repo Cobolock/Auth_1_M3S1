@@ -2,8 +2,6 @@ from typing import Annotated
 
 from dataclasses import dataclass
 
-from async_fastapi_jwt_auth import AuthJWT
-from async_fastapi_jwt_auth.exceptions import JWTDecodeError
 from fastapi import Depends
 from redis.asyncio import Redis
 from sqlalchemy import select
@@ -15,14 +13,14 @@ from auth.db.postgres import get_session as pg_get_session
 from auth.db.redis import get_redis
 from auth.models.user import User
 from auth.schemas.user import Credentials
-from auth.services.jwt import JWTPair, get_jwt
+from auth.services.jwt import JWTPair, JWTService
 
 
 @dataclass
 class UserService:
     db_session: Annotated[AsyncSession, Depends(pg_get_session)]
     cache_session: Annotated[Redis, Depends(get_redis)]
-    jwt_service: Annotated[AuthJWT, Depends(get_jwt)]
+    jwt_service: Annotated[JWTService, Depends()]
 
     async def create(self, creds: Credentials) -> bool:
         new_user = User(creds.username, creds.password)
@@ -47,15 +45,27 @@ class UserService:
         return False
 
     async def refresh(self, refresh_token) -> JWTPair:
-        try:
-            payload = await JWTPair.get_payload(refresh_token)
-        except JWTDecodeError:
-            raise BadRefreshTokenError from None
-
-        username = payload["sub"]
-        return await JWTPair.generate(subject=username)
+        username = await self.jwt_service.get_sub(refresh_token)
+        if await self.revoke_token(username, refresh_token):
+            jwt = await self.jwt_service.generate(subject=username)
+            await self.cache_token(username, jwt.RT)
+        else:
+            raise BadRefreshTokenError
+        return jwt
 
     async def login(self, creds: Credentials) -> JWTPair:
         if await self.check_creds(creds):
-            return await JWTPair.generate(subject=creds.username)
+            jwt = await self.jwt_service.generate(subject=creds.username)
+            await self.cache_token(creds.username, jwt.RT)
+            return jwt
         raise NotAuthorizedError from None
+
+    async def revoke_token(self, username, refresh_token) -> bool:
+        if await self.cache_session.sismember(f"user:{username}", refresh_token):
+            await self.cache_session.srem(f"user:{username}", refresh_token)
+        else:
+            return False
+        return True
+
+    async def cache_token(self, username, token) -> None:
+        await self.cache_session.sadd(f"user:{username}", token)
