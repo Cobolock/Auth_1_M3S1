@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 env_file = ".env"
@@ -26,7 +26,7 @@ class RedisConfig(BaseSettings):
 
 
 class ExtraConfig(BaseSettings):
-    """Прочие настройки"""
+    """Прочие настройки."""
 
     model_config = SettingsConfigDict(extra="ignore")
 
@@ -34,7 +34,7 @@ class ExtraConfig(BaseSettings):
 
 
 class JWTSettings(BaseSettings):
-    """Параметры конфигурации JWT"""
+    """Параметры конфигурации JWT."""
 
     model_config = SettingsConfigDict(extra="ignore", env_file=env_file)
 
