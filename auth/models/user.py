@@ -1,11 +1,10 @@
-from sqlalchemy import ForeignKey
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from auth.core.config import extra_config
 from auth.models.base import Base
 from auth.models.mixins import AuditMixin, UUIDPrimaryKeyMixin
-from auth.models.role import Role  # noqa: TCH001
+from auth.models.role import Role
 
 
 class User(Base, UUIDPrimaryKeyMixin, AuditMixin):
@@ -15,7 +14,7 @@ class User(Base, UUIDPrimaryKeyMixin, AuditMixin):
     password: Mapped[str]
     first_name: Mapped[str | None]
     last_name: Mapped[str | None]
-    roles: Mapped[list["Role"] | None] = mapped_column(ForeignKey("roles.id"))
+    roles: Mapped[set[Role]] = relationship(secondary="user_role_association")
     enabled: Mapped[bool | None]
 
     def __init__(

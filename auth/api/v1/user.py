@@ -18,7 +18,7 @@ auth_dep = AuthJWTBearer()
 async def new_user(
     credentials: Credentials, user_service: Annotated[UserService, Depends()]
 ) -> dict:
-    status = await user_service.create(credentials)
+    status = await user_service.create_user(credentials)
     if status:
         return {"detail": "Created"}
     raise HTTPException(status_code=HTTPStatus.CONFLICT, detail="Username in use")
