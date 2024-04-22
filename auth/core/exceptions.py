@@ -50,3 +50,24 @@ class RoleDeletionProhibitedError(ApplicationError):
 
     status_code = status.HTTP_403_FORBIDDEN
     detail = "Role deletion prohibited"
+
+
+class NotAuthorizedError(ApplicationError):
+    """Пользователь не авторизован."""
+
+    status_code = status.HTTP_401_UNAUTHORIZED
+    detail = "Unauthorized"
+
+
+class BadRefreshTokenError(ApplicationError):
+    """Refresh Token устарел или не существует."""
+
+    status_code = status.HTTP_400_BAD_REQUEST
+    detail = "Your refresh token void"
+
+
+class TokenMalformedError(ApplicationError):
+    """Токен был изменён."""
+
+    status_code = status.HTTP_400_BAD_REQUEST
+    detail = "Your refresh token is malformed"
