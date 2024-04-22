@@ -1,6 +1,7 @@
 from typing import Annotated
 
 from dataclasses import dataclass
+from uuid import UUID
 
 from fastapi import Depends
 from sqlalchemy import select
@@ -35,6 +36,11 @@ class UserRepository:
 
     async def get_by_username(self, username: str, *, with_roles: bool = False) -> User:
         if user := await self.get_by_username_or_none(username, with_roles=with_roles):
+            return user
+        raise ObjectNotFoundError(User)
+
+    async def get_by_uuid(self, user_id: UUID) -> User:
+        if user := await self._session.get(User, user_id):
             return user
         raise ObjectNotFoundError(User)
 

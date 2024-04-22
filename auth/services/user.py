@@ -5,7 +5,12 @@ from dataclasses import dataclass
 from fastapi import Depends
 from redis.asyncio import Redis
 
-from auth.core.exceptions import BadRefreshTokenError, NotAuthorizedError, ObjectAlreadyExistsError
+from auth.core.exceptions import (
+    BadRefreshTokenError,
+    NotAuthorizedError,
+    ObjectAlreadyExistsError,
+    ObjectNotFoundError,
+)
 from auth.db.redis import get_redis
 from auth.models.user import User
 from auth.repositories.role import RoleRepository
@@ -34,6 +39,15 @@ class UserService:
             return user.check_password(creds.password)
         return False
 
+    async def change_auth(self, username: str, creds: Credentials) -> None:
+        if user := await self.user_repo.get_by_username_or_none(username):
+            if creds.username != "":
+                user.username = creds.username
+            if creds.password != "":
+                user.password = user.make_password(creds.password)
+            await self.user_repo.update(user)
+            await self.revoke_all_tokens(username)
+
     async def refresh(self, refresh_token) -> JWTPair:
         username = await self.jwt_service.get_sub(refresh_token)
         if await self.revoke_token(username, refresh_token):
@@ -50,12 +64,20 @@ class UserService:
             return jwt
         raise NotAuthorizedError from None
 
+    async def logout(self, refresh_token: str) -> bool:
+        if username := await self.jwt_service.get_sub(refresh_token):
+            return await self.revoke_token(username, refresh_token)
+        raise ObjectNotFoundError(User) from None
+
     async def revoke_token(self, username, refresh_token) -> bool:
         if await self.cache_session.sismember(f"user:{username}", refresh_token):
             await self.cache_session.srem(f"user:{username}", refresh_token)
         else:
-            return False
+            raise BadRefreshTokenError
         return True
+
+    async def revoke_all_tokens(self, username) -> None:
+        await self.cache_session.delete(f"user:{username}")
 
     async def cache_token(self, username, token) -> None:
         await self.cache_session.sadd(f"user:{username}", token)
