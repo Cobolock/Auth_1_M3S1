@@ -5,7 +5,12 @@ from dataclasses import dataclass
 from fastapi import Depends
 from redis.asyncio import Redis
 
-from auth.core.exceptions import BadRefreshTokenError, NotAuthorizedError, ObjectAlreadyExistsError
+from auth.core.exceptions import (
+    BadRefreshTokenError,
+    NotAuthorizedError,
+    ObjectAlreadyExistsError,
+    ObjectNotFoundError,
+)
 from auth.db.redis import get_redis
 from auth.models.user import User
 from auth.repositories.role import RoleRepository
@@ -59,11 +64,16 @@ class UserService:
             return jwt
         raise NotAuthorizedError from None
 
+    async def logout(self, refresh_token: str) -> bool:
+        if username := await self.jwt_service.get_sub(refresh_token):
+            return await self.revoke_token(username, refresh_token)
+        raise ObjectNotFoundError(User) from None
+
     async def revoke_token(self, username, refresh_token) -> bool:
         if await self.cache_session.sismember(f"user:{username}", refresh_token):
             await self.cache_session.srem(f"user:{username}", refresh_token)
         else:
-            return False
+            raise BadRefreshTokenError
         return True
 
     async def revoke_all_tokens(self, username) -> None:
