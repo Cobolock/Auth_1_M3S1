@@ -5,13 +5,7 @@ from dataclasses import dataclass
 from fastapi import Depends
 from redis.asyncio import Redis
 
-
-from auth.core.exceptions import (
-  ObjectAlreadyExistsError,
-  BadRefreshTokenError,
-  NotAuthorizedError
-)
-from auth.db.postgres import get_session as pg_get_session
+from auth.core.exceptions import BadRefreshTokenError, NotAuthorizedError, ObjectAlreadyExistsError
 from auth.db.redis import get_redis
 from auth.models.user import User
 from auth.repositories.role import RoleRepository

@@ -1,10 +1,11 @@
-from typing import Any, Annotated
+from typing import Annotated, Any
 
 from dataclasses import dataclass
 
 from async_fastapi_jwt_auth import AuthJWT
 from async_fastapi_jwt_auth.auth_jwt import AuthJWTBearer
 from async_fastapi_jwt_auth.exceptions import JWTDecodeError
+from fastapi import Depends
 
 from auth.core.config import JWTSettings
 from auth.core.exceptions import BadRefreshTokenError, TokenMalformedError
@@ -27,7 +28,7 @@ class JWTPair:
 
 
 class JWTService:
-    def __init__(self, jwt: Annotated[AuthJWT, Depends(gwt_jwt)]) -> None:
+    def __init__(self, jwt: Annotated[AuthJWT, Depends(get_jwt)]) -> None:
         self._jwt = jwt
         self.AT: str
         self.RT: str
