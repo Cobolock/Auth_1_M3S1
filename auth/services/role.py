@@ -6,13 +6,16 @@ from fastapi import Depends
 
 from auth.core.exceptions import RoleDeletionProhibitedError
 from auth.models.role import Role
+from auth.models.permission import Permission
 from auth.repositories.role import RoleRepository
+from auth.repositories.permission import PermissionRepository
 from auth.schemas.role import RoleCreate, RoleUpdate
 
 
 @dataclass
 class RoleService:
     _role_repo: Annotated[RoleRepository, Depends()]
+    _permission_repo: Annotated[PermissionRepository, Depends()]
 
     async def create_role(self, role_data: RoleCreate) -> Role:
         role = Role(**role_data.model_dump())
@@ -34,9 +37,22 @@ class RoleService:
         self.check_role_allowed_to_delete(role)
         await self._role_repo.delete(role)
 
-    # async def get_permissions_by_role_id(self, role_id: str) -> Permission:
-    #     role =  self._role_repo.get(role_id)
-    #     return await role.permissions.get_all()
+    async def get_permissions_by_role_id(self, role_id: str) -> list[Permission]:
+        role = await self._role_repo.get(role_id)
+        permissions = role.permissions
+        return permissions
+
+    async def add_permission(self, role_id: str, permission_id: str) -> Role:
+        role = await self._role_repo.get(role_id)
+        permission = await self._permission_repo.get(permission_id)
+        role.permissions.add(permission)
+        return await self._role_repo.update(role)
+
+    async def remove_permission(self, role_id: str, permission_id: str) -> Role:
+        role = await self._role_repo.get(role_id)
+        permission = await self._permission_repo.get(permission_id)
+        role.permissions.delete(permission)
+        return await self._role_repo.update(role)
 
     @staticmethod
     def check_role_allowed_to_delete(role: Role) -> None:

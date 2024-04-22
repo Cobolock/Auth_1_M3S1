@@ -1,6 +1,4 @@
-import uuid
-from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped
 
 from auth.models.base import Base
 from auth.models.mixins import UUIDPrimaryKeyMixin
