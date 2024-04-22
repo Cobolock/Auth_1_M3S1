@@ -25,13 +25,16 @@ class User(Base, UUIDPrimaryKeyMixin, AuditMixin):
         last_name: str | None = None,
     ) -> None:
         self.username = username
-        self.password = generate_password_hash(password + extra_config.salt)
+        self.password = self.make_password(password)
         self.first_name = first_name
         self.last_name = last_name
         self.enabled = True
 
     def check_password(self, password: str) -> bool:
         return check_password_hash(self.password, password + extra_config.salt)
+
+    def make_password(self, password) -> str:
+        return generate_password_hash(password + extra_config.salt)
 
     def __repr__(self) -> str:
         return f"<User {self.username}>"

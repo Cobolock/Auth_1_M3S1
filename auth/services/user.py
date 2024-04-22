@@ -34,6 +34,15 @@ class UserService:
             return user.check_password(creds.password)
         return False
 
+    async def change_auth(self, username: str, creds: Credentials) -> None:
+        if user := await self.user_repo.get_by_username_or_none(username):
+            if creds.username != "":
+                user.username = creds.username
+            if creds.password != "":
+                user.password = user.make_password(creds.password)
+            await self.user_repo.update(user)
+            await self.revoke_all_tokens(username)
+
     async def refresh(self, refresh_token) -> JWTPair:
         username = await self.jwt_service.get_sub(refresh_token)
         if await self.revoke_token(username, refresh_token):
@@ -56,6 +65,9 @@ class UserService:
         else:
             return False
         return True
+
+    async def revoke_all_tokens(self, username) -> None:
+        await self.cache_session.delete(f"user:{username}")
 
     async def cache_token(self, username, token) -> None:
         await self.cache_session.sadd(f"user:{username}", token)
