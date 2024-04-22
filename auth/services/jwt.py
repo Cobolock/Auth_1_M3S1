@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Annotated
 
 from dataclasses import dataclass
 
@@ -9,16 +9,12 @@ from async_fastapi_jwt_auth.exceptions import JWTDecodeError
 from auth.core.config import JWTSettings
 from auth.core.exceptions import BadRefreshTokenError, TokenMalformedError
 
-auth_dep = AuthJWTBearer()
+get_jwt = AuthJWTBearer()
 
 
 @AuthJWT.load_config
 def get_config():
     return JWTSettings()
-
-
-def get_jwt() -> AuthJWT:
-    return auth_dep()
 
 
 @dataclass
@@ -31,19 +27,19 @@ class JWTPair:
 
 
 class JWTService:
-    def __init__(self) -> None:
-        self._jwt_service = get_jwt()
+    def __init__(self, jwt: Annotated[AuthJWT, Depends(gwt_jwt)]) -> None:
+        self._jwt = jwt
         self.AT: str
         self.RT: str
 
     async def generate(self, subject) -> JWTPair:
-        self.AT = await self._jwt_service.create_access_token(subject=subject)
-        self.RT = await self._jwt_service.create_refresh_token(subject=subject)
+        self.AT = await self._jwt.create_access_token(subject=subject)
+        self.RT = await self._jwt.create_refresh_token(subject=subject)
         return JWTPair(self.AT, self.RT)
 
     async def get_payload(self, refresh_token) -> dict[str, Any]:
         try:
-            return await self._jwt_service.get_raw_jwt(refresh_token)
+            return await self._jwt.get_raw_jwt(refresh_token)
         except JWTDecodeError:
             raise JWTDecodeError from None
         except ValueError:
