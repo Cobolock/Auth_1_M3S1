@@ -1,7 +1,15 @@
+from sqlalchemy import Column, ForeignKey, Table
 from sqlalchemy.orm import Mapped, mapped_column
 
 from auth.models.base import Base
 from auth.models.mixins import AuditMixin
+
+association_table = Table(
+    "user_role_association",
+    Base.metadata,
+    Column("role_id", ForeignKey("roles.id")),
+    Column("user_id", ForeignKey("users.id")),
+)
 
 
 class Role(Base, AuditMixin):
