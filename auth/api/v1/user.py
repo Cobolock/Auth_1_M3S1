@@ -4,7 +4,7 @@ from http import HTTPStatus
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from auth.schemas.user import Credentials
+from auth.schemas.user import Credentials, Entry
 from auth.services.user import UserService
 
 router = APIRouter()
@@ -40,3 +40,8 @@ async def user_refresh(refresh_token: str, user_service: Annotated[UserService, 
 async def user_logout(refresh_token: str, user_service: Annotated[UserService, Depends()]) -> None:
     """Удаляет RT из кэша."""
     await user_service.logout(refresh_token)
+
+@router.post("/entry", status_code=HTTPStatus.OK)
+async def add_entry(username: str, entry: Entry, user_service: Annotated[UserService, Depends()]) -> None:
+    """Вносит запись о входе пользователя."""
+    await user_service.add_entry(username, entry)

@@ -1,3 +1,4 @@
+from ipaddress import ip_address
 from typing import Annotated
 
 from dataclasses import dataclass
@@ -13,6 +14,8 @@ from auth.core.exceptions import (
 )
 from auth.db.redis import get_redis
 from auth.models.user import User
+from auth.models.entry import Entry
+from auth.repositories.entry import EntryRepository
 from auth.repositories.role import RoleRepository
 from auth.repositories.user import UserRepository
 from auth.schemas.user import Credentials
@@ -23,6 +26,7 @@ from auth.services.jwt import JWTPair, JWTService
 class UserService:
     user_repo: Annotated[UserRepository, Depends()]
     role_repo: Annotated[RoleRepository, Depends()]
+    entry_repo: Annotated[EntryRepository, Depends()]
     cache_session: Annotated[Redis, Depends(get_redis)]
     jwt_service: Annotated[JWTService, Depends()]
 
@@ -94,3 +98,9 @@ class UserService:
         if role in user.roles:
             user.roles.remove(role)
         return await self.user_repo.update(user)
+
+    async def add_entry(self, username: str, entry: Entry) -> None:
+        user = await self.user_repo.get_by_username(username)
+        entry.user_id = user.id
+        new_entry = Entry(**entry.model_dump())
+        entry = await self.entry_repo.add(new_entry)
