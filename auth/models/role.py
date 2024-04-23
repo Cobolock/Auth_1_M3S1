@@ -1,5 +1,6 @@
 from typing import List
 
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import Column, ForeignKey, Table, String
 
@@ -12,7 +13,7 @@ role_permission_association = Table(
     "role_permission_association",
     Base.metadata,
     Column("role_id", String, ForeignKey("roles.id")),
-    Column("permission_id", String, ForeignKey("permissions.id")),
+    Column("permission_id", UUID(as_uuid=True), ForeignKey("permissions.id")),
 )
 
 
@@ -22,7 +23,9 @@ class Role(Base, AuditMixin):
     id: Mapped[str] = mapped_column(primary_key=True)
     name: Mapped[str]
     # add new field - FK
-    permissions: Mapped[List[Permission]] = relationship(secondary=role_permission_association)
+    permissions: Mapped[List[Permission] | None] = relationship(
+        secondary=role_permission_association
+    )
 
     def __repr__(self) -> str:
         return f"<Role {self.id}>"
