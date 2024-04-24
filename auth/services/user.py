@@ -12,10 +12,13 @@ from auth.core.exceptions import (
     ObjectNotFoundError,
 )
 from auth.db.redis import get_redis
+from auth.models.entry import Entry as EntryModel
 from auth.models.user import User
+from auth.repositories.entry import EntryRepository
 from auth.repositories.role import RoleRepository
 from auth.repositories.user import UserRepository
 from auth.schemas.user import Credentials
+from auth.schemas.user import Entry as EntrySchema
 from auth.services.jwt import JWTPair, JWTService
 
 
@@ -23,6 +26,7 @@ from auth.services.jwt import JWTPair, JWTService
 class UserService:
     user_repo: Annotated[UserRepository, Depends()]
     role_repo: Annotated[RoleRepository, Depends()]
+    entry_repo: Annotated[EntryRepository, Depends()]
     cache_session: Annotated[Redis, Depends(get_redis)]
     jwt_service: Annotated[JWTService, Depends()]
 
@@ -94,3 +98,13 @@ class UserService:
         if role in user.roles:
             user.roles.remove(role)
         return await self.user_repo.update(user)
+
+    async def add_entry(self, username: str, entry: EntrySchema) -> None:
+        user = await self.user_repo.get_by_username(username)
+        entry.user_id = user.id
+        new_entry = EntryModel(**entry.model_dump())
+        await self.entry_repo.add(new_entry)
+
+    async def get_entries(self, username: str) -> list[EntryModel]:
+        user = await self.user_repo.get_by_username(username)
+        return await self.entry_repo.get_all(user.id)

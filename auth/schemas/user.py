@@ -1,3 +1,4 @@
+from datetime import datetime
 from uuid import UUID
 
 from pydantic import BaseModel
@@ -20,3 +21,11 @@ class UserInDB(BaseModel):
 class Credentials(BaseModel):
     username: str
     password: str
+
+
+class Entry(BaseModel):
+    created: datetime
+    ip_address: str
+    location: str
+    user_agent: str
+    user_id: UUID | None
