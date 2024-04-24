@@ -1,14 +1,10 @@
-from typing import List
-
+from sqlalchemy import Column, ForeignKey, String, Table
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import Column, ForeignKey, Table, String
-
 
 from auth.models.base import Base
 from auth.models.mixins import AuditMixin
 from auth.models.permission import Permission
-
 
 role_permission_association = Table(
     "role_permission_association",
@@ -31,7 +27,7 @@ class Role(Base, AuditMixin):
     id: Mapped[str] = mapped_column(primary_key=True)
     name: Mapped[str]
     # add new field - FK
-    permissions: Mapped[List[Permission] | None] = relationship(
+    permissions: Mapped[list[Permission] | None] = relationship(
         secondary=role_permission_association, lazy="selectin"
     )
 

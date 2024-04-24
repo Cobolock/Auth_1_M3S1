@@ -6,8 +6,8 @@ from fastapi import Depends
 
 from auth.core.exceptions import RoleDeletionProhibitedError
 from auth.models.role import Role
-from auth.repositories.role import RoleRepository
 from auth.repositories.permission import PermissionRepository
+from auth.repositories.role import RoleRepository
 from auth.schemas.role import RoleCreate, RoleUpdate
 
 

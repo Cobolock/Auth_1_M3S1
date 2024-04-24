@@ -4,10 +4,9 @@ from dataclasses import dataclass
 
 from fastapi import Depends
 
-from auth.core.exceptions import RoleDeletionProhibitedError
 from auth.models.permission import Permission
 from auth.repositories.permission import PermissionRepository
-from auth.schemas.permission import PermissionCreate, PermissionUpdate, PermissionRead
+from auth.schemas.permission import PermissionCreate
 
 
 @dataclass
@@ -25,12 +24,14 @@ class PermissionService:
         return await self._permission_repo.get_all()
 
     async def update_permission_by_id(
-        self, permission_id: str, permission_data: PermissionUpdate
+        self, permission_id: str, permission_data: PermissionCreate
     ) -> Permission:
         permission = await self._permission_repo.get(permission_id)
         permission.name = permission_data.name
-        permission.description = permission_data.description
-        permission.resource = permission_data.resource
+        if permission_data.description:
+            permission.description = permission_data.description
+        if permission_data.resource:
+            permission.resource = permission_data.resource
         return await self._permission_repo.update(permission)
 
     async def delete_permission_by_id(self, permission_id: str) -> None:

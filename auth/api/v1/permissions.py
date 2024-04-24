@@ -3,7 +3,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, status
 
 from auth.models.permission import Permission
-from auth.schemas.permission import PermissionCreate, PermissionRead, PermissionUpdate
+from auth.schemas.permission import PermissionCreate, PermissionRead
 from auth.services.permission import PermissionService
 
 router = APIRouter()
@@ -57,7 +57,7 @@ async def get_all_permissions(
 )
 async def update_permission(
     permission_id: str,
-    permission_data: PermissionUpdate,
+    permission_data: PermissionCreate,
     permission_service: Annotated[PermissionService, Depends()],
 ) -> Permission:
     return await permission_service.update_permission_by_id(permission_id, permission_data)
