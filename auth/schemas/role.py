@@ -27,3 +27,4 @@ class RoleUpdate(BaseModel):
     """Схема для обновления информации о существующей роли."""
 
     name: str
+    permissions: list[PermissionId]

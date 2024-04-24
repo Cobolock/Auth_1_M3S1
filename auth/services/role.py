@@ -18,41 +18,37 @@ class RoleService:
     _permission_repo: Annotated[PermissionRepository, Depends()]
 
     async def create_role(self, role_data: RoleCreate) -> Role:
+        perms = [
+            await self._permission_repo.get(permission_id=perm.id) for perm in role_data.permissions
+        ]
         role = Role(**role_data.model_dump())
+        role.permissions = perms
         return await self._role_repo.add(role)
 
     async def get_role_by_id(self, role_id: str) -> Role:
         return await self._role_repo.get(role_id)
 
     async def get_all_roles(self) -> list[Role]:
-        return await self._role_repo.get_all()
+        roles = await self._role_repo.get_all()
+        return roles
 
     async def update_role_by_id(self, role_id: str, role_data: RoleUpdate) -> Role:
         role = await self._role_repo.get(role_id)
         role.name = role_data.name
-        return await self._role_repo.update(role)
+        if role_data.permissions:
+            perms = [
+                await self._permission_repo.get(permission_id=perm.id)
+                for perm in role_data.permissions
+            ]
+            role.permissions = perms
+            print(role)
+        result = await self._role_repo.update(role)
+        return result
 
     async def delete_role_by_id(self, role_id: str) -> None:
         role = await self._role_repo.get(role_id)
         self.check_role_allowed_to_delete(role)
         await self._role_repo.delete(role)
-
-    async def get_permissions_by_role_id(self, role_id: str) -> list[Permission]:
-        role = await self._role_repo.get(role_id)
-        permissions = role.permissions
-        return permissions
-
-    async def add_permission(self, role_id: str, permission_id: str) -> Role:
-        role = await self._role_repo.get(role_id)
-        permission = await self._permission_repo.get(permission_id)
-        role.permissions.add(permission)
-        return await self._role_repo.update(role)
-
-    async def remove_permission(self, role_id: str, permission_id: str) -> Role:
-        role = await self._role_repo.get(role_id)
-        permission = await self._permission_repo.get(permission_id)
-        role.permissions.delete(permission)
-        return await self._role_repo.update(role)
 
     @staticmethod
     def check_role_allowed_to_delete(role: Role) -> None:

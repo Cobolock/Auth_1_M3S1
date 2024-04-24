@@ -24,7 +24,7 @@ class Role(Base, AuditMixin):
     name: Mapped[str]
     # add new field - FK
     permissions: Mapped[List[Permission] | None] = relationship(
-        secondary=role_permission_association
+        secondary=role_permission_association, lazy="selectin"
     )
 
     def __repr__(self) -> str:
