@@ -55,7 +55,13 @@ async def test_get_all_roles(test_client: AsyncClient, roles_in_db: list[Role]) 
 
     assert body == unordered(
         [
-            {"id": str(role.id), "name": role.name, "updated_at": ANY, "created_at": ANY}
+            {
+                "id": str(role.id),
+                "name": role.name,
+                "updated_at": ANY,
+                "created_at": ANY,
+                "permissions": [],
+            }
             for role in roles_in_db
         ]
     )

@@ -18,7 +18,7 @@ class UserInDB(BaseModel):
     last_name: str | None
 
 
-class Entry(BaseModel):
+class EntrySchema(BaseModel):
     created: datetime
     ip_address: str
     location: str

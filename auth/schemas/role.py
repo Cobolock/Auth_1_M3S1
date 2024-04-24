@@ -10,7 +10,7 @@ class RoleCreate(BaseModel):
 
     id: str
     name: str
-    permissions: list[PermissionId]
+    permissions: list[PermissionId] = []
 
 
 class RoleRead(BaseModel):
@@ -20,11 +20,11 @@ class RoleRead(BaseModel):
     name: str
     updated_at: datetime
     created_at: datetime
-    permissions: list[PermissionRead]
+    permissions: list[PermissionRead] = []
 
 
 class RoleUpdate(BaseModel):
     """Схема для обновления информации о существующей роли."""
 
-    name: str
-    permissions: list[PermissionId]
+    name: str | None = None
+    permissions: list[PermissionId] | None = None

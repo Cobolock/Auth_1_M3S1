@@ -8,7 +8,7 @@ from auth.models.user import User
 
 @pytest.fixture()
 async def role_in_db(session: AsyncSession) -> Role:
-    role = Role(id="moderator", name="Модератор")
+    role = Role(id="moderator", name="Модератор", permissions=[])
     session.add(role)
     await session.commit()
     return role
@@ -17,9 +17,9 @@ async def role_in_db(session: AsyncSession) -> Role:
 @pytest.fixture()
 async def roles_in_db(session: AsyncSession) -> list[Role]:
     roles = [
-        Role(id="admin", name="Администратор"),
-        Role(id="moderator", name="Модератор"),
-        Role(id="user", name="Пользователь"),
+        Role(id="admin", name="Администратор", permissions=[]),
+        Role(id="moderator", name="Модератор", permissions=[]),
+        Role(id="user", name="Пользователь", permissions=[]),
     ]
     session.add_all(roles)
     await session.commit()

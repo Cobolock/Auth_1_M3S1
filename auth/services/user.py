@@ -20,9 +20,8 @@ from auth.models.user import User
 from auth.repositories.entry import EntryRepository
 from auth.repositories.role import RoleRepository
 from auth.repositories.user import UserRepository
-from auth.schemas.user import UserCreate
+from auth.schemas.user import EntrySchema, UserCreate
 from auth.schemas.user_auth import UserCredentials
-from auth.schemas.user import Entry as EntrySchema
 from auth.services.jwt import JWTPair, JWTService
 
 

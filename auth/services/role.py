@@ -32,8 +32,9 @@ class RoleService:
 
     async def update_role_by_id(self, role_id: str, role_data: RoleUpdate) -> Role:
         role = await self._role_repo.get(role_id)
-        role.name = role_data.name
-        if role_data.permissions:
+        if role_data.name is not None:
+            role.name = role_data.name
+        if role_data.permissions is not None:
             perms = [
                 await self._permission_repo.get(permission_id=perm.id)
                 for perm in role_data.permissions
