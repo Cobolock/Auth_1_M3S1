@@ -7,23 +7,18 @@ from pydantic import BaseModel
 class UserCreate(BaseModel):
     username: str
     password: str
-    first_name: str | None
-    last_name: str | None
-    enabled: bool
+    first_name: str | None = None
+    last_name: str | None = None
 
 
 class UserInDB(BaseModel):
     id: UUID
+    username: str
     first_name: str | None
     last_name: str | None
 
 
-class Credentials(BaseModel):
-    username: str
-    password: str
-
-
-class Entry(BaseModel):
+class EntrySchema(BaseModel):
     created: datetime
     ip_address: str
     location: str

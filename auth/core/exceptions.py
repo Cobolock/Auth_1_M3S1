@@ -71,3 +71,10 @@ class TokenMalformedError(ApplicationError):
 
     status_code = status.HTTP_400_BAD_REQUEST
     detail = "Your refresh token is malformed"
+
+
+class UsernameInUseError(ApplicationError):
+    """Пользователь с таким именем уже существует."""
+
+    status_code = status.HTTP_409_CONFLICT
+    detail = "Username in use"

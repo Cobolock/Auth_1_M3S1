@@ -1,4 +1,4 @@
-name: auth
+name: Test Auth API
 
 on:
   push:
@@ -44,7 +44,6 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
-    if: false
     permissions: write-all
     steps:
 

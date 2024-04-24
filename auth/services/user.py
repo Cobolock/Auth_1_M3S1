@@ -4,12 +4,15 @@ from dataclasses import dataclass
 
 from fastapi import Depends
 from redis.asyncio import Redis
+from werkzeug.security import check_password_hash
 
+from auth.core.config import extra_config
 from auth.core.exceptions import (
     BadRefreshTokenError,
     NotAuthorizedError,
     ObjectAlreadyExistsError,
     ObjectNotFoundError,
+    UsernameInUseError,
 )
 from auth.db.redis import get_redis
 from auth.models.entry import Entry as EntryModel
@@ -17,8 +20,8 @@ from auth.models.user import User
 from auth.repositories.entry import EntryRepository
 from auth.repositories.role import RoleRepository
 from auth.repositories.user import UserRepository
-from auth.schemas.user import Credentials
-from auth.schemas.user import Entry as EntrySchema
+from auth.schemas.user import EntrySchema, UserCreate
+from auth.schemas.user_auth import UserCredentials
 from auth.services.jwt import JWTPair, JWTService
 
 
@@ -30,20 +33,23 @@ class UserService:
     cache_session: Annotated[Redis, Depends(get_redis)]
     jwt_service: Annotated[JWTService, Depends()]
 
-    async def create_user(self, creds: Credentials) -> bool:
-        new_user = User(creds.username, creds.password)
+    async def create_user(self, user_data: UserCreate) -> User:
+        new_user = User(
+            user_data.username, user_data.password, user_data.first_name, user_data.last_name
+        )
         try:
-            await self.user_repo.add(new_user)
+            return await self.user_repo.add(new_user)
         except ObjectAlreadyExistsError:
-            return False
-        return True
+            raise UsernameInUseError from None
 
-    async def check_creds(self, creds: Credentials) -> bool:
-        if user := await self.user_repo.get_by_username_or_none(creds.username):
-            return user.check_password(creds.password)
-        return False
+    async def check_creds(self, creds: UserCredentials) -> None:
+        user = await self.user_repo.get_by_username_or_none(creds.username)
+        if not user:
+            raise NotAuthorizedError
+        if not check_password_hash(user.password, creds.password + extra_config.salt):
+            raise NotAuthorizedError
 
-    async def change_auth(self, username: str, creds: Credentials) -> None:
+    async def change_auth(self, username: str, creds: UserCredentials) -> None:
         if user := await self.user_repo.get_by_username_or_none(username):
             if creds.username != "":
                 user.username = creds.username
@@ -61,12 +67,11 @@ class UserService:
             raise BadRefreshTokenError
         return jwt
 
-    async def login(self, creds: Credentials) -> JWTPair:
-        if await self.check_creds(creds):
-            jwt = await self.jwt_service.generate(subject=creds.username)
-            await self.cache_token(creds.username, jwt.RT)
-            return jwt
-        raise NotAuthorizedError from None
+    async def login(self, creds: UserCredentials) -> JWTPair:
+        await self.check_creds(creds)
+        jwt = await self.jwt_service.generate(subject=creds.username)
+        await self.cache_token(creds.username, jwt.RT)
+        return jwt
 
     async def logout(self, refresh_token: str) -> bool:
         if username := await self.jwt_service.get_sub(refresh_token):
