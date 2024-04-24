@@ -10,7 +10,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from auth.core.exceptions import ObjectAlreadyExistsError
 from auth.db.postgres import get_session
 from auth.models.entry import Entry as EntryModel
-from auth.schemas.user import Entry as EntrySchema
 
 
 @dataclass

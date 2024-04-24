@@ -4,9 +4,9 @@ from http import HTTPStatus
 
 from fastapi import APIRouter, Depends, HTTPException
 
+from auth.models.entry import Entry as EntryModel
 from auth.schemas.user import Credentials
 from auth.schemas.user import Entry as EntrySchema
-from auth.models.entry import Entry as EntryModel
 from auth.services.user import UserService
 
 router = APIRouter()

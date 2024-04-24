@@ -12,13 +12,13 @@ from auth.core.exceptions import (
     ObjectNotFoundError,
 )
 from auth.db.redis import get_redis
-from auth.schemas.user import Entry as EntrySchema
-from auth.models.user import User
 from auth.models.entry import Entry as EntryModel
+from auth.models.user import User
 from auth.repositories.entry import EntryRepository
 from auth.repositories.role import RoleRepository
 from auth.repositories.user import UserRepository
 from auth.schemas.user import Credentials
+from auth.schemas.user import Entry as EntrySchema
 from auth.services.jwt import JWTPair, JWTService
 
 
