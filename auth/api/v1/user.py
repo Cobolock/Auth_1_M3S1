@@ -2,54 +2,41 @@ from typing import Annotated
 
 from http import HTTPStatus
 
-from async_fastapi_jwt_auth import AuthJWT
-from async_fastapi_jwt_auth.auth_jwt import AuthJWTBearer
-from async_fastapi_jwt_auth.exceptions import JWTDecodeError
 from fastapi import APIRouter, Depends, HTTPException
 
 from auth.schemas.user import Credentials
 from auth.services.user import UserService
 
 router = APIRouter()
-auth_dep = AuthJWTBearer()
 
 
 @router.post("/", status_code=HTTPStatus.CREATED)
 async def new_user(
     credentials: Credentials, user_service: Annotated[UserService, Depends()]
 ) -> dict:
-    status = await user_service.create(credentials)
+    status = await user_service.create_user(credentials)
     if status:
         return {"detail": "Created"}
     raise HTTPException(status_code=HTTPStatus.CONFLICT, detail="Username in use")
 
 
-@router.post("/login")
+@router.post("/login", status_code=HTTPStatus.OK)
 async def user_login(
-    credentials: Credentials,
-    user_service: Annotated[UserService, Depends()],
-    authorize: Annotated[AuthJWT, Depends(auth_dep)],
+    credentials: Credentials, user_service: Annotated[UserService, Depends()]
 ) -> dict:
-    """Проверить логин и пароль."""
-    if await user_service.check_creds(credentials):
-        access_token = await authorize.create_access_token(subject=credentials.username)
-        refresh_token = await authorize.create_refresh_token(subject=credentials.username)
-        return {"access_token": access_token, "refresh_token": refresh_token}
-    raise HTTPException(
-        status_code=HTTPStatus.UNAUTHORIZED, detail="Incorrect username or password"
-    )
+    """Проверить логин и пароль, выдать в ответ JWT."""
+    jwt = await user_service.login(credentials)
+    return jwt.format()
 
 
-@router.post("/refresh")
-async def user_refresh(refresh_token: str, authorize: Annotated[AuthJWT, Depends(auth_dep)]):
-    try:
-        payload = await authorize.get_raw_jwt(refresh_token)
-    except JWTDecodeError:
-        raise HTTPException(
-            status_code=HTTPStatus.BAD_REQUEST, detail="Your refresh token is void"
-        ) from None
+@router.post("/refresh", status_code=HTTPStatus.OK)
+async def user_refresh(refresh_token: str, user_service: Annotated[UserService, Depends()]) -> dict:
+    """Обновить Refresh Token, если он валидный."""
+    jwt = await user_service.refresh(refresh_token)
+    return jwt.format()
 
-    username = payload["sub"]
-    access_token = await authorize.create_access_token(subject=username)
-    refresh_token = await authorize.create_refresh_token(subject=username)
-    return {"access_token": access_token, "refresh_token": refresh_token}
+
+@router.post("/logout", status_code=HTTPStatus.OK)
+async def user_logout(refresh_token: str, user_service: Annotated[UserService, Depends()]) -> None:
+    """Удаляет RT из кэша."""
+    await user_service.logout(refresh_token)
