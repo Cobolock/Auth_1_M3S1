@@ -6,6 +6,7 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 
+from auth.api.v1.login_history import router as login_history_router
 from auth.api.v1.permissions import router as permissions_router
 from auth.api.v1.roles import router as roles_router
 from auth.api.v1.user_auth import router as user_auth_router
@@ -39,6 +40,7 @@ app = FastAPI(
 )
 app.include_router(permissions_router, prefix="/api/v1/permissions", tags=["Ограничения"])
 app.include_router(roles_router, prefix="/api/v1/roles", tags=["Роли"])
+app.include_router(login_history_router, prefix="/api/v1/user", tags=["История входов"])
 app.include_router(user_auth_router, prefix="/api/v1/user", tags=["Пользователь"])
 app.include_router(user_roles_router, prefix="/api/v1/users", tags=["Пользователи"])
 

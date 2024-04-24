@@ -6,7 +6,7 @@ from auth.models.entry import Entry
 from auth.schemas.user import EntrySchema
 from auth.services.user import UserService
 
-router = APIRouter(tags=["Login History"])
+router = APIRouter()
 
 
 @router.post("/entry", status_code=status.HTTP_201_CREATED)
