@@ -33,20 +33,20 @@ services:
         delay: 5s
         max_attempts: 3
 
-#  auth-api:
-#    build:
-#      context: .
-#      target: development
-#    env_file:
-#      - .env.docker
-#    volumes:
-#      - .:/app
-#    ports:
-#      - "8000:8000"
-#    profiles: [with-auth]
-#    depends_on:
-#      postgres:
-#        condition: service_healthy
+  auth-api:
+    build:
+      context: .
+      target: development
+    env_file:
+      - ./envs/.env.docker
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    profiles: [with-auth]
+    depends_on:
+      postgres:
+        condition: service_healthy
 
 #volumes:
 #  postgres-data:

@@ -34,8 +34,9 @@ cp infra/postgres/.env.example infra/postgres/.env
 ### Run API locally
 
 1. Run infrastructure (databases) in Docker:
-```
-docker compose -f docker-compose.debug.yml up -d --scale auth-api=0
+
+```bash
+docker compose -f docker-compose.debug.yml up -d
 ```
 
 2. Run API:
@@ -52,7 +53,7 @@ docker compose -f docker-compose.debug.yml down
 
 Run all services in Docker:
 ```
-docker compose -f docker-compose.debug.yml up -d --build
+docker compose -f docker-compose.debug.yml --profile with-auth up -d
 ```
 
 To stop:

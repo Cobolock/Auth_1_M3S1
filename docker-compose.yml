@@ -34,7 +34,7 @@ services:
       context: .
       target: production
     env_file:
-      - .env.docker
+      - ./envs/.env.docker
     volumes:
       - .:/app
     ports:

@@ -7,7 +7,7 @@ from async_fastapi_jwt_auth.auth_jwt import AuthJWTBearer
 from async_fastapi_jwt_auth.exceptions import JWTDecodeError
 from fastapi import Depends
 
-from auth.core.config import JWTSettings
+from auth.core.config import jwt_settings
 from auth.core.exceptions import BadRefreshTokenError, TokenMalformedError
 
 get_jwt = AuthJWTBearer()
@@ -15,7 +15,7 @@ get_jwt = AuthJWTBearer()
 
 @AuthJWT.load_config
 def get_config():
-    return JWTSettings()
+    return jwt_settings
 
 
 @dataclass
