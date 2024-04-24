@@ -6,7 +6,6 @@ from fastapi import Depends
 
 from auth.core.exceptions import RoleDeletionProhibitedError
 from auth.models.role import Role
-from auth.models.permission import Permission
 from auth.repositories.role import RoleRepository
 from auth.repositories.permission import PermissionRepository
 from auth.schemas.role import RoleCreate, RoleUpdate
@@ -29,8 +28,7 @@ class RoleService:
         return await self._role_repo.get(role_id)
 
     async def get_all_roles(self) -> list[Role]:
-        roles = await self._role_repo.get_all()
-        return roles
+        return await self._role_repo.get_all()
 
     async def update_role_by_id(self, role_id: str, role_data: RoleUpdate) -> Role:
         role = await self._role_repo.get(role_id)
@@ -41,9 +39,7 @@ class RoleService:
                 for perm in role_data.permissions
             ]
             role.permissions = perms
-            print(role)
-        result = await self._role_repo.update(role)
-        return result
+        return await self._role_repo.update(role)
 
     async def delete_role_by_id(self, role_id: str) -> None:
         role = await self._role_repo.get(role_id)
