@@ -1,4 +1,3 @@
-from ipaddress import ip_address
 from typing import Annotated
 
 from dataclasses import dataclass
@@ -13,8 +12,9 @@ from auth.core.exceptions import (
     ObjectNotFoundError,
 )
 from auth.db.redis import get_redis
+from auth.schemas.user import Entry as EntrySchema
 from auth.models.user import User
-from auth.models.entry import Entry
+from auth.models.entry import Entry as EntryModel
 from auth.repositories.entry import EntryRepository
 from auth.repositories.role import RoleRepository
 from auth.repositories.user import UserRepository
@@ -99,8 +99,12 @@ class UserService:
             user.roles.remove(role)
         return await self.user_repo.update(user)
 
-    async def add_entry(self, username: str, entry: Entry) -> None:
+    async def add_entry(self, username: str, entry: EntrySchema) -> None:
         user = await self.user_repo.get_by_username(username)
         entry.user_id = user.id
-        new_entry = Entry(**entry.model_dump())
-        entry = await self.entry_repo.add(new_entry)
+        new_entry = EntryModel(**entry.model_dump())
+        await self.entry_repo.add(new_entry)
+
+    async def get_entries(self, username: str) -> list[EntryModel]:
+        user = await self.user_repo.get_by_username(username)
+        return await self.entry_repo.get_all(user.id)

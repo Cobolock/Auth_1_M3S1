@@ -22,6 +22,7 @@ class Credentials(BaseModel):
     username: str
     password: str
 
+
 class Entry(BaseModel):
     created: datetime
     ip_address: str
