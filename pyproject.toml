@@ -31,6 +31,7 @@ typeguard = "^4.2.1"
 ruff = "^0.3.4"
 safety = "^3.1.0"
 deptry = "^0.16.0"
+types-redis = "^4.6.0"
 
 [tool.mypy]  # https://mypy.readthedocs.io/en/latest/config_file.html#using-a-pyproject-toml-file
 junit_xml = "reports/mypy.xml"
