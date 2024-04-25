@@ -27,7 +27,7 @@ make format lint
 Prepare environment variables:
 
 ```bash
-cp .env.example .env
+cp envs/.env.example envs/.env
 cp infra/postgres/.env.example infra/postgres/.env
 ```
 
@@ -48,6 +48,12 @@ To stop:
 ```bash
 docker compose -f docker-compose.debug.yml down
 ```
+
+3. Create superuser:
+```bash
+python auth/core/manage.py superadmin superpassword
+```
+Change superuser's username and password to your liking.
 
 ### Run everything in Docker
 
