@@ -1,46 +1,42 @@
-from datetime import datetime
+from datetime import UTC, datetime
+from http import HTTPStatus
 from ipaddress import ip_address
 from random import choice, randint
 from string import ascii_lowercase
+
 from httpx import AsyncClient
-from pytest_unordered import unordered
-from sqlalchemy.ext.asyncio import AsyncSession
 
-from auth.models.role import Role
-from tests.fixtures.db_entities import user_in_db
 
-from auth.models.user import User
+async def test_create_and_get_entries(test_client: AsyncClient) -> None:
+    num = 3
 
-async def test_create_entry(test_client: AsyncClient, session: AsyncSession) -> None:
     # Act
     response = await test_client.post(
         "/api/v1/user", json={"username": "user", "password": "password"}
     )
 
     # Assert
-    assert response.status_code == 201
+    assert response.status_code == HTTPStatus.CREATED
 
     user = response.json()
 
     # Arrange
-    role_data = {
-        "created": datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"),
-        "ip_address": str(ip_address(randint(1, 0xffffffff))),
-        "location": "".join(choice(ascii_lowercase) for _ in range(randint(6, 16))),
-        "user_agent": "".join(choice(ascii_lowercase) for _ in range(randint(6, 16))),
-        "user_id": user["id"]
-    }
+    for _ in range(num):
+        role_data = {
+            "created": datetime.now(tz=UTC).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "ip_address": str(ip_address(randint(1, 0xFFFFFFFF))),  # noqa: S311
+            "location": "".join(choice(ascii_lowercase) for _ in range(randint(6, 16))),  # noqa: S311
+            "user_agent": "".join(choice(ascii_lowercase) for _ in range(randint(6, 16))),  # noqa: S311
+            "user_id": user["id"],
+        }
+
+        response = await test_client.post("/api/v1/user/entry?username=user", json=role_data)
+
+        assert response.status_code == HTTPStatus.CREATED
 
     # Act
-    response = await test_client.post("/api/v1/user/entry", json=role_data)
+    response = await test_client.get("/api/v1/user/entries?username=user")
 
     # Assert
-    assert response.status_code == 201
-
-async def test_get_entries(test_client: AsyncClient, session: AsyncSession) -> None:
-    # Act
-    response = await test_client.get(f"/api/v1/user/entries?username=user")
-
-    # Assert
-    assert response.status_code == 200
-    assert len(response) == 1
+    assert response.status_code == HTTPStatus.OK
+    assert len(response.json()) == num

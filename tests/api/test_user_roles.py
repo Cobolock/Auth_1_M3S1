@@ -1,3 +1,5 @@
+from http import HTTPStatus
+
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -12,7 +14,7 @@ async def test_add_role_to_user(
     response = await test_client.put(f"/api/v1/users/{user_in_db.username}/roles/{role_in_db.id}")
 
     # Assert
-    assert response.status_code == 204
+    assert response.status_code == HTTPStatus.NO_CONTENT
 
     await session.refresh(user_in_db, ["roles"])
     assert role_in_db in user_in_db.roles
@@ -32,7 +34,17 @@ async def test_remove_role_from_user(
     )
 
     # Assert
-    assert response.status_code == 204
+    assert response.status_code == HTTPStatus.NO_CONTENT
 
     await session.refresh(user_in_db, ["roles"])
     assert role_in_db not in user_in_db.roles
+
+
+async def test_change_auth(test_client: AsyncClient, user_in_db: User) -> None:
+    # Act
+    response = await test_client.patch(
+        f"/api/v1/users/{user_in_db.username}",
+        json={"username": "losername", "password": "shmassword"},
+    )
+    # Assert
+    assert response.status_code == HTTPStatus.OK

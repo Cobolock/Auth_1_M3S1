@@ -1,3 +1,5 @@
+from http import HTTPStatus
+
 import pytest
 
 from httpx import AsyncClient
@@ -24,7 +26,7 @@ async def test_create_new_user(test_client: AsyncClient, session: AsyncSession) 
     assert body["last_name"] == user_data["last_name"]
 
     # Assert
-    assert response.status_code == 201
+    assert response.status_code == HTTPStatus.CREATED
 
     user = await session.get(User, body["id"])
     assert user is not None
@@ -41,7 +43,7 @@ async def test_create_new_user_already_exists(test_client: AsyncClient) -> None:
     response = await test_client.post("/api/v1/user", json=user_data)
 
     # Assert
-    assert response.status_code == 409
+    assert response.status_code == HTTPStatus.CONFLICT
     assert response.json() == {"detail": "Username in use"}
 
 
@@ -52,7 +54,7 @@ async def test_user_login(test_client: AsyncClient, user_in_db: User, redis_clie
     )
 
     # Assert
-    assert response.status_code == 200
+    assert response.status_code == HTTPStatus.OK
     body = response.json()
     assert body.get("access_token") is not None
     assert body.get("refresh_token") is not None
@@ -68,14 +70,14 @@ async def test_user_logout(test_client: AsyncClient, user_in_db: User, redis_cli
         "/api/v1/user/login", json={"username": user_in_db.username, "password": "password"}
     )
     # Assert
-    assert response.status_code == 200
+    assert response.status_code == HTTPStatus.OK
 
     # Act
     refresh_token = response.json()["refresh_token"]
     response = await test_client.post("/api/v1/user/logout", json={"refresh_token": refresh_token})
 
     # Assert
-    assert response.status_code == 204
+    assert response.status_code == HTTPStatus.NO_CONTENT
     assert await redis_client.smembers(f"user:{user_in_db.username}") == set()
 
 
@@ -88,14 +90,14 @@ async def test_user_refresh(
     )
 
     # Assert
-    assert response.status_code == 200
+    assert response.status_code == HTTPStatus.OK
 
     # Act
     refresh_token = response.json()["refresh_token"]
     response = await test_client.post("/api/v1/user/refresh", json={"refresh_token": refresh_token})
 
     # Assert
-    assert response.status_code == 200
+    assert response.status_code == HTTPStatus.OK
     body = response.json()
     assert body.get("access_token") is not None
     assert body.get("refresh_token") is not None
