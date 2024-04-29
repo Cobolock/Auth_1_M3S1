@@ -112,4 +112,4 @@ class UserService:
 
     async def get_entries(self, username: str) -> list[EntryModel]:
         user = await self.user_repo.get_by_username(username)
-        return await self.entry_repo.get_all(user.id)
+        return await self.entry_repo.get_last_10(user.id)

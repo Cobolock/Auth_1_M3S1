@@ -24,6 +24,11 @@ class EntryRepository:
             raise ObjectAlreadyExistsError(EntryModel) from None
         return entry
 
-    async def get_all(self, user_id) -> list[EntryModel]:
-        query = select(EntryModel).where(EntryModel.user_id == user_id)
+    async def get_last_10(self, user_id) -> list[EntryModel]:
+        query = (
+            select(EntryModel)
+            .where(EntryModel.user_id == user_id)
+            .order_by(EntryModel.created)
+            .limit(10)
+        )
         return list(await self._session.scalars(query))
