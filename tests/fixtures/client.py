@@ -13,7 +13,7 @@ from auth.main import app
 
 
 @pytest.fixture()
-async def test_app(_init_db, session: AsyncSession, redis_client: Redis) -> FastAPI:  # noqa: PT019
+async def test_app(session: AsyncSession, redis_client: Redis) -> FastAPI:
     app.dependency_overrides[get_session] = lambda: session
     app.dependency_overrides[get_redis] = lambda: redis_client
     return app

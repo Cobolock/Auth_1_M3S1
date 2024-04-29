@@ -10,11 +10,8 @@ from auth.repositories.entry import EntryRepository
 from auth.repositories.permission import PermissionRepository
 from auth.repositories.role import RoleRepository
 from auth.repositories.user import UserRepository
-from auth.schemas.permission import PermissionCreate, PermissionId
-from auth.schemas.role import RoleCreate
 from auth.schemas.user import UserCreate
 from auth.services.jwt import JWTService
-from auth.services.permission import PermissionService
 from auth.services.role import RoleService
 from auth.services.user import UserService
 
@@ -32,7 +29,6 @@ async def _run(username: str, password: str):
     entry_repo = EntryRepository(_session)
     jwt_service = JWTService(_jwt)
 
-    permission_service = PermissionService(permission_repo)
     role_service = RoleService(_role_repo=role_repo, _permission_repo=permission_repo)
     user_service = UserService(
         user_repo=user_repo,
@@ -42,25 +38,13 @@ async def _run(username: str, password: str):
         jwt_service=jwt_service,
     )
 
-    permission_data = PermissionCreate(
-        name="superadmin", description="Super Administrator", resource="all"
-    )
-
-    new_permission = await permission_service.create_permission(permission_data)
-
-    role_data = RoleCreate(
-        id="superadmin",
-        name="Super Administrator",
-        permissions=[PermissionId(id=str(new_permission.id))],
-    )
-
-    new_role = await role_service.create_role(role_data)
+    admin_role = await role_service.get_role_by_id("admin")
 
     user_data = UserCreate(username=username, password=password)
 
     await user_service.create_user(user_data)
 
-    await user_service.add_role(username, new_role.id)
+    await user_service.add_role(username, admin_role.id)
 
 
 def main(username: str, password: str):

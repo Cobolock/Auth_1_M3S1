@@ -1,5 +1,6 @@
 # ruff: noqa: ERA001, E402, D205
 import asyncio
+import sys
 
 from logging.config import fileConfig
 
@@ -14,8 +15,8 @@ config = context.config
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
-if config.config_file_name is not None:
-    fileConfig(config.config_file_name)
+if config.config_file_name is not None and "pytest" not in sys.modules:
+    fileConfig(config.config_file_name, disable_existing_loggers=False)
 
 # add your model's MetaData object here
 # for 'autogenerate' support
@@ -69,11 +70,14 @@ async def run_async_migrations() -> None:
     and associate a connection with the context.
 
     """
-    connectable = async_engine_from_config(
-        config.get_section(config.config_ini_section, {}),
-        prefix="sqlalchemy.",
-        poolclass=pool.NullPool,
-    )
+    connectable = context.config.attributes.get("connection", None)
+
+    if connectable is None:
+        connectable = async_engine_from_config(
+            config.get_section(config.config_ini_section, {}),
+            prefix="sqlalchemy.",
+            poolclass=pool.NullPool,
+        )
 
     async with connectable.connect() as connection:
         await connection.run_sync(do_run_migrations)
@@ -83,6 +87,7 @@ async def run_async_migrations() -> None:
 
 def run_migrations_online() -> None:
     """Run migrations in 'online' mode."""
+
     asyncio.run(run_async_migrations())
 
 

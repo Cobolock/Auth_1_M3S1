@@ -55,7 +55,7 @@ docker compose -f docker-compose.debug.yml down
 3. Create superuser:
 
 ```bash
-python auth/core/manage.py superadmin superpassword
+python -m auth.core.manage superadmin superpassword
 ```
 
 Change superuser's username and password to your liking.
