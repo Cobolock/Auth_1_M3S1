@@ -16,6 +16,7 @@ class PostgresConfig(BaseSettings):
     db: str = Field("auth_db", alias="POSTGRES_DB")
     host: str = Field("127.0.0.1", alias="DB_HOST")
     port: int = Field(5432, alias="DB_PORT")
+    echo: str = Field("True", alias="DB_ECHO")
 
 
 class RedisConfig(BaseSettings):
