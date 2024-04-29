@@ -37,6 +37,8 @@ types-redis = "^4.6.0"
 testcontainers = {extras = ["postgres", "redis"], version = "^4.4.0"}
 pytest-asyncio = "^0.23.6"
 pytest-unordered = "^0.6.0"
+pytest-alembic = "^0.11.0"
+pytest-postgresql = "^6.0.0"
 
 [tool.mypy]  # https://mypy.readthedocs.io/en/latest/config_file.html#using-a-pyproject-toml-file
 junit_xml = "reports/mypy.xml"
@@ -68,7 +70,7 @@ warn_untyped_fields = true
 [tool.pytest.ini_options]
 # https://docs.pytest.org/en/6.2.x/customize.html#pyproject-toml
 # https://docs.pytest.org/en/latest/reference/reference.html#ini-options-ref
-filterwarnings = ["error", "ignore::DeprecationWarning", "ignore::ImportWarning"]
+filterwarnings = ["error", "ignore::DeprecationWarning", "ignore::ImportWarning", "ignore::ResourceWarning"]
 testpaths = ["auth", "tests"]
 asyncio_mode = "auto"
 xfail_strict = true
@@ -84,7 +86,8 @@ addopts = [
   "--doctest-modules",
   "--doctest-continue-on-failure",
   "--cov",
-  "--junitxml=reports/junit.xml"
+  "--junitxml=reports/junit.xml",
+  "--test-alembic", # pytest-alembic
 ]
 
 [tool.coverage.run]  # https://coverage.readthedocs.io/en/latest/config.html#run
@@ -111,6 +114,7 @@ overgeneral-exceptions = ["builtins.BaseException", "builtins.Exception"]
 [tool.ruff]  # https://github.com/charliermarsh/ruff
 line-length = 100
 target-version = "py312"
+exclude = ["migrations"]
 
 [tool.ruff.lint]
 ignore-init-module-imports = true

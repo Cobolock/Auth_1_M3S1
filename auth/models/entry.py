@@ -18,7 +18,7 @@ class Entry(UUIDPrimaryKeyMixin, Base):
     ip_address: Mapped[str]
     location: Mapped[str]
     user_agent: Mapped[str]
-    user_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"))
+    user_id: Mapped[UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
     user: Mapped[User] = relationship()
 
     def __repr__(self) -> str:

@@ -11,20 +11,11 @@ from auth.api.v1.permissions import router as permissions_router
 from auth.api.v1.roles import router as roles_router
 from auth.api.v1.user_auth import router as user_auth_router
 from auth.api.v1.user_roles import router as user_roles_router
-from auth.db.fixtures import create_roles
-from auth.db.postgres import create_database
 from auth.db.redis import redis
 
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
-    # Импорт моделей необходим для их автоматического создания
-    from auth.models.role import Role  # noqa: F401
-    from auth.models.user import User  # noqa: F401
-    from auth.services.jwt import get_config  # noqa: F401
-
-    await create_database()
-    await create_roles()
     await redis.initialize()
     yield
     await redis.close()
