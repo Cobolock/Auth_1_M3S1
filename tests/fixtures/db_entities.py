@@ -28,7 +28,7 @@ async def roles_in_db(session: AsyncSession) -> list[Role]:
 
 @pytest.fixture()
 async def admin_role_in_db(session: AsyncSession) -> Role:
-    return await session.get(Role, "admin", options=[selectinload(Role.permissions)])
+    return await session.get_one(Role, "admin", options=[selectinload(Role.permissions)])
 
 
 @pytest.fixture()
