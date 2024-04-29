@@ -1,9 +1,9 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class UserCredentials(BaseModel):
-    username: str
-    password: str
+    username: str = Field(max_length=32)
+    password: str = Field(max_length=128)
 
 
 class UserRefresh(BaseModel):
