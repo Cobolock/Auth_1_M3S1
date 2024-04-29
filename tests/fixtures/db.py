@@ -39,9 +39,11 @@ def async_engine(_init_postgres, postgres_container: PostgresContainer) -> Async
 
 
 @pytest.fixture()
-def alembic_engine(async_engine):
-    """Used by pytest-alembic."""
-    return async_engine
+def alembic_engine(_init_postgres, postgres_container: PostgresContainer) -> AsyncEngine:
+    return create_async_engine(
+        postgres_container.get_connection_url(),
+        poolclass=NullPool,  # https://stackoverflow.com/a/75444607/12530392
+    )
 
 
 @pytest.fixture()

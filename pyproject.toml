@@ -70,7 +70,7 @@ warn_untyped_fields = true
 [tool.pytest.ini_options]
 # https://docs.pytest.org/en/6.2.x/customize.html#pyproject-toml
 # https://docs.pytest.org/en/latest/reference/reference.html#ini-options-ref
-filterwarnings = ["error", "ignore::DeprecationWarning", "ignore::ImportWarning"]
+filterwarnings = ["error", "ignore::DeprecationWarning", "ignore::ImportWarning", "ignore::ResourceWarning"]
 testpaths = ["auth", "tests"]
 asyncio_mode = "auto"
 xfail_strict = true

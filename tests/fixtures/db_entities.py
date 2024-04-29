@@ -1,6 +1,7 @@
 import pytest
 
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from auth.models.role import Role
 from auth.models.user import User
@@ -17,13 +18,17 @@ async def role_in_db(session: AsyncSession) -> Role:
 @pytest.fixture()
 async def roles_in_db(session: AsyncSession) -> list[Role]:
     roles = [
-        Role(id="admin", name="Администратор", permissions=[]),
         Role(id="moderator", name="Модератор", permissions=[]),
         Role(id="user", name="Пользователь", permissions=[]),
     ]
     session.add_all(roles)
     await session.commit()
     return roles
+
+
+@pytest.fixture()
+async def admin_role_in_db(session: AsyncSession) -> Role:
+    return await session.get(Role, "admin", options=[selectinload(Role.permissions)])
 
 
 @pytest.fixture()
