@@ -24,6 +24,7 @@ make format lint
 ```
 
 ## Run
+
 Prepare environment variables:
 
 ```bash
@@ -40,29 +41,35 @@ docker compose -f docker-compose.debug.yml up -d
 ```
 
 2. Run API:
+
 ```bash
 make api
 ```
 
 To stop:
+
 ```bash
 docker compose -f docker-compose.debug.yml down
 ```
 
 3. Create superuser:
+
 ```bash
 python auth/core/manage.py superadmin superpassword
 ```
+
 Change superuser's username and password to your liking.
 
 ### Run everything in Docker
 
 Run all services in Docker:
+
 ```
 docker compose -f docker-compose.debug.yml --profile with-auth up -d
 ```
 
 To stop:
+
 ```bash
 docker compose -f docker-compose.debug.yml down
 ```
@@ -73,9 +80,36 @@ docker compose -f docker-compose.debug.yml down
 docker compose up -d --build
 ```
 
-### Makefile usage
+## Migrations
 
-[`Makefile`](https://github.com/Cobolock/Auth_1_M3S1/blob/master/Makefile) contains a lot of functions for faster development.
+Create migration:
+
+```bash
+alembic revision --autogenerate -m "Message"
+```
+
+Apply migrations:
+
+```bash
+alembic upgrade head
+```
+
+Revert last migration:
+
+```bash
+alembic downgrade -1
+```
+
+Revert all migrations:
+
+```bash
+alembic downgrade base
+```
+
+## Makefile usage
+
+[`Makefile`](https://github.com/Cobolock/Auth_1_M3S1/blob/master/Makefile) contains a lot of functions for faster
+development.
 
 <details>
 <summary>1. Download and remove Poetry</summary>

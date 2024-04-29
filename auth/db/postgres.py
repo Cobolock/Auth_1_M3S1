@@ -5,8 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 from auth.core.config import pg_config
 from auth.models.base import Base
 
-dsn = f"postgresql+asyncpg://{pg_config.user}:{pg_config.password}@{pg_config.host}:{pg_config.port}/{pg_config.db}"
-engine = create_async_engine(dsn, echo=True, future=True)
+engine = create_async_engine(pg_config.dsn, echo=True, future=True)
 async_session = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
 

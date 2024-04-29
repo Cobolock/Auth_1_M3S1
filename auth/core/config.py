@@ -2,7 +2,7 @@ import sys
 
 from pathlib import Path
 
-from pydantic import Field
+from pydantic import Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -11,11 +11,20 @@ class PostgresConfig(BaseSettings):
 
     model_config = SettingsConfigDict(extra="ignore")
 
-    user: str = Field(..., alias="POSTGRES_USER")
-    password: str = Field(..., alias="POSTGRES_PASSWORD")
+    dialect: str = "postgresql"
+    driver: str = "asyncpg"
+    user: SecretStr = Field(..., alias="POSTGRES_USER")
+    password: SecretStr = Field(..., alias="POSTGRES_PASSWORD")
     db: str = Field("auth_db", alias="POSTGRES_DB")
-    host: str = Field("127.0.0.1", alias="DB_HOST")
-    port: int = Field(5432, alias="DB_PORT")
+    host: str = Field("127.0.0.1", alias="POSTGRES_HOST")
+    port: int = Field(5432, alias="POSTGRES_PORT")
+
+    @property
+    def dsn(self) -> str:
+        return (
+            f"{self.dialect}+{self.driver}://{self.user.get_secret_value()}:"
+            f"{self.password.get_secret_value()}@{self.host}:{self.port}/{self.db}"
+        )
 
 
 class RedisConfig(BaseSettings):
