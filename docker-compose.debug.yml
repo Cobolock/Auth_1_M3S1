@@ -5,8 +5,8 @@ services:
     image: postgres:16-alpine
     env_file:
       - infra/postgres/.env
-#    volumes:
-#      - postgres-data:/data/postgres
+    volumes:
+      - postgres-data:/data/postgres
     ports:
       - "5432:5432"
     healthcheck:
@@ -25,8 +25,8 @@ services:
     ports:
       - "6379:6379"
     command: redis-server --save 60 1 --loglevel warning
-#    volumes:
-#      - redis-data:/data
+    volumes:
+      - redis-data:/data
     deploy:
       restart_policy:
         condition: on-failure
@@ -43,11 +43,11 @@ services:
       - .:/app
     ports:
       - "8000:8000"
-    profiles: [with-auth]
+    profiles: [ with-auth ]
     depends_on:
       postgres:
         condition: service_healthy
 
-#volumes:
-#  postgres-data:
-#  redis-data:
+volumes:
+  postgres-data:
+  redis-data:

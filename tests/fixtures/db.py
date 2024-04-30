@@ -1,22 +1,54 @@
+import contextlib
+
 from collections.abc import AsyncIterator
 
+import psycopg
 import pytest
 
+from pytest_alembic import MigrationContext
+from pytest_postgresql.janitor import DatabaseJanitor
 from redis.asyncio import Redis
 from sqlalchemy import NullPool
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, create_async_engine
 from testcontainers.postgres import PostgresContainer
 from testcontainers.redis import RedisContainer
 
-from auth.models.base import Base
+
+@pytest.fixture()
+def _init_postgres(postgres_container: PostgresContainer) -> None:
+    janitor = DatabaseJanitor(
+        user=postgres_container.username,
+        host=postgres_container.get_container_host_ip(),
+        port=postgres_container.get_exposed_port(postgres_container.port),
+        dbname=postgres_container.dbname,
+        version="16.0",
+        password=postgres_container.password,
+        connection_timeout=1,
+    )
+    with contextlib.suppress(psycopg.errors.DatabaseError):
+        janitor.drop()
+    janitor.init()
 
 
 @pytest.fixture()
-def async_engine(postgres_container: PostgresContainer) -> AsyncEngine:
+def async_engine(_init_postgres, postgres_container: PostgresContainer) -> AsyncEngine:
     return create_async_engine(
         postgres_container.get_connection_url(),
         poolclass=NullPool,  # https://stackoverflow.com/a/75444607/12530392
     )
+
+
+@pytest.fixture()
+def alembic_engine(_init_postgres, postgres_container: PostgresContainer) -> AsyncEngine:
+    return create_async_engine(
+        postgres_container.get_connection_url(),
+        poolclass=NullPool,  # https://stackoverflow.com/a/75444607/12530392
+    )
+
+
+@pytest.fixture()
+def _run_migrations(alembic_runner: MigrationContext):
+    alembic_runner.migrate_up_to("heads", return_current=False)
 
 
 @pytest.fixture()
@@ -25,22 +57,13 @@ async def redis_client(redis_container: RedisContainer) -> AsyncIterator[Redis]:
         host=redis_container.get_container_host_ip(),
         port=int(redis_container.get_exposed_port(redis_container.port)),
     )
+    await redis.flushdb()
     yield redis
     await redis.close()
 
 
 @pytest.fixture()
-async def _init_db(async_engine, redis_client: Redis) -> AsyncIterator[None]:
-    async with async_engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-    await redis_client.flushdb()
-    yield
-    async with async_engine.begin() as conn:
-        await conn.run_sync(Base.metadata.drop_all)
-
-
-@pytest.fixture()
-async def session(_init_db, async_engine) -> AsyncIterator[AsyncSession]:
+async def session(async_engine, _run_migrations) -> AsyncIterator[AsyncSession]:
     async with AsyncSession(
         async_engine, expire_on_commit=False, autoflush=False, autocommit=False
     ) as session:

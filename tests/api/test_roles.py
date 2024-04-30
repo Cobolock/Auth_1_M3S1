@@ -46,7 +46,9 @@ async def test_get_nonexistent_role(test_client: AsyncClient) -> None:
     assert response.json() == {"detail": "Role not found"}
 
 
-async def test_get_all_roles(test_client: AsyncClient, roles_in_db: list[Role]) -> None:
+async def test_get_all_roles(
+    test_client: AsyncClient, roles_in_db: list[Role], admin_role_in_db: Role
+) -> None:
     # Act
     response = await test_client.get("/api/v1/roles")
 
@@ -56,6 +58,23 @@ async def test_get_all_roles(test_client: AsyncClient, roles_in_db: list[Role]) 
 
     assert body == unordered(
         [
+            {
+                "id": str(admin_role_in_db.id),
+                "name": admin_role_in_db.name,
+                "updated_at": ANY,
+                "created_at": ANY,
+                "permissions": [
+                    {
+                        "id": str(permission.id),
+                        "name": permission.name,
+                        "description": permission.description,
+                        "resource": "all",
+                    }
+                    for permission in admin_role_in_db.permissions
+                ],
+            }
+        ]
+        + [
             {
                 "id": str(role.id),
                 "name": role.name,
