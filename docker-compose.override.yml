@@ -30,6 +30,20 @@ services:
     ports:
       - "8001:8000"
 
+  # Auth
+
+  auth-api:
+    ports:
+      - "8002:8000"
+
+  auth-redis:
+    ports:
+      - "6380:6379"
+
+  auth-postgres:
+    ports:
+      - "5433:5432"
+
   # Monitoring
 
   kibana:

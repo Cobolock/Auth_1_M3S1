@@ -91,6 +91,8 @@ CMD ["uvicorn", "auth.main:app", "--host", "0.0.0.0", "--port", "8000"]
 FROM python-base as production
 COPY --from=builder-base $PYSETUP_PATH $PYSETUP_PATH
 COPY ./auth /app/auth
+COPY ./migrations /app/migrations
+COPY ./alembic.ini /app/alembic.ini
 WORKDIR /app
 CMD ["gunicorn", "--bind", "0.0.0.0:8000", "-k", "uvicorn.workers.UvicornWorker", "auth.main:app"]
 EXPOSE 8000
