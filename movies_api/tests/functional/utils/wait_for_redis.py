@@ -2,7 +2,7 @@ import logging
 
 import backoff
 
-from redis import Redis
+from redis import Redis, RedisError
 
 from tests.functional.settings import settings
 from tests.functional.utils.logger import setup_logger
@@ -10,7 +10,7 @@ from tests.functional.utils.logger import setup_logger
 logger = logging.getLogger(__name__)
 
 
-@backoff.on_predicate(backoff.expo, max_time=60)
+@backoff.on_exception(backoff.expo, RedisError, max_time=60)
 def check_redis_health():
     redis = Redis.from_url(str(settings.redis_url), socket_timeout=1)
     return redis.ping()
