@@ -33,16 +33,16 @@ jobs:
         uses: actions/cache@v3
         with:
           path: .venv
-          key: venv-async-api-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('async_api/poetry.lock') }}
+          key: venv-async-api-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('movies_api/poetry.lock') }}
 
       - name: Install dependencies if cache does not exist
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
         run: poetry install --no-interaction --no-root
-        working-directory: async_api
+        working-directory: movies_api
 
       - name: Run linters
         run: make lint
-        working-directory: async_api
+        working-directory: movies_api
 
   test:
     runs-on: ubuntu-latest
@@ -53,4 +53,4 @@ jobs:
 
       - name: Run tests
         run: docker compose -f docker-compose.ci.yml up --build --exit-code-from test-runner
-        working-directory: async_api/tests/functional
+        working-directory: movies_api/tests/functional
