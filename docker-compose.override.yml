@@ -1,0 +1,59 @@
+# Для локальной разработки
+version: "3.9"
+
+services:
+
+  # Common services
+
+  movies-postgres:
+    ports:
+      - "5432:5432"
+
+  elasticsearch:
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+
+  # ETL
+
+  etl:
+    volumes:
+      - etl_data:/data
+      - ./etl:/app
+
+  # Movies API
+
+  movies-api:
+    volumes:
+      - ./movies_api:/app
+    ports:
+      - "8000:8000"
+
+  movies-redis:
+    ports:
+      - "6379:6379"
+
+  # Movies Admin
+
+  movies-admin:
+    volumes:
+      - movies_admin_static_data:/opt/static:rw
+      - ./movies_admin:/opt/app
+    ports:
+      - "8001:8000"
+
+  # Auth
+
+  auth-api:
+    volumes:
+      - ./auth:/app
+    ports:
+      - "8002:8000"
+
+  auth-redis:
+    ports:
+      - "6380:6379"
+
+  auth-postgres:
+    ports:
+      - "5433:5432"

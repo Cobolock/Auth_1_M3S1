@@ -1,15 +1,18 @@
-name: Test Auth API
+name: Auth API
 
 on:
   push:
-    branches:
-      - main
-      - master
+    branches: [master]
+    paths: ["auth/**"]
   pull_request:
+    paths: ["auth/**"]
 
 jobs:
   lint:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: auth
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -44,6 +47,9 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: auth
     permissions: write-all
     steps:
 
@@ -77,21 +83,3 @@ jobs:
 
       - name: Run tests
         run: make test
-
-      - name: Code Coverage Summary Report
-        uses: irongut/CodeCoverageSummary@v1.3.0
-        with:
-          filename: reports/coverage.xml
-          badge: true
-          format: 'markdown'
-          output: 'both'
-
-      - name: Add Coverage PR Comment
-        uses: marocchino/sticky-pull-request-comment@v2
-        if: github.event_name == 'pull_request'
-        with:
-          recreate: true
-          path: code-coverage-results.md
-
-      - name: Add Coverage Report to Job Summary
-        run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
