@@ -12,3 +12,5 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
+
+CSRF_TRUSTED_ORIGINS = ["http://localhost:7001", "http://127.0.0.1:7001"]

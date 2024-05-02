@@ -5,48 +5,35 @@ import psqlextra.indexes.unique_index
 
 
 class Migration(migrations.Migration):
+
     dependencies = [
-        ("movies", "0001_initial"),
+        ('movies', '0001_initial'),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name="genrefilmwork",
-            options={
-                "verbose_name": "genre_filmwork",
-                "verbose_name_plural": "genre_filmworks",
-            },
+            name='genrefilmwork',
+            options={'verbose_name': 'genre_filmwork', 'verbose_name_plural': 'genre_filmworks'},
         ),
         migrations.AlterModelOptions(
-            name="personfilmwork",
-            options={
-                "verbose_name": "person_filmwork",
-                "verbose_name_plural": "person_filmworks",
-            },
+            name='personfilmwork',
+            options={'verbose_name': 'person_filmwork', 'verbose_name_plural': 'person_filmworks'},
         ),
         migrations.AddField(
-            model_name="filmwork",
-            name="persons",
-            field=models.ManyToManyField(
-                through="movies.PersonFilmwork", to="movies.person"
-            ),
+            model_name='filmwork',
+            name='persons',
+            field=models.ManyToManyField(through='movies.PersonFilmwork', to='movies.person'),
         ),
         migrations.AddIndex(
-            model_name="filmwork",
-            index=models.Index(
-                fields=["creation_date"], name="film_work_creation_date_idx"
-            ),
+            model_name='filmwork',
+            index=models.Index(fields=['creation_date'], name='film_work_creation_date_idx'),
         ),
         migrations.AddIndex(
-            model_name="genrefilmwork",
-            index=psqlextra.indexes.unique_index.UniqueIndex(
-                fields=["film_work", "genre"], name="film_work_genre_idx"
-            ),
+            model_name='genrefilmwork',
+            index=psqlextra.indexes.unique_index.UniqueIndex(fields=['film_work', 'genre'], name='film_work_genre_idx'),
         ),
         migrations.AddIndex(
-            model_name="personfilmwork",
-            index=psqlextra.indexes.unique_index.UniqueIndex(
-                fields=["film_work", "person"], name="film_work_person_idx"
-            ),
+            model_name='personfilmwork',
+            index=psqlextra.indexes.unique_index.UniqueIndex(fields=['film_work', 'person'], name='film_work_person_idx'),
         ),
     ]

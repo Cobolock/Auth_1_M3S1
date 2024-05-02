@@ -9,4 +9,6 @@ include(
     "components/database.py",
     "components/security.py",
     "components/i18n.py",
+    "components/logging.py",
+    "components/corsheaders.py",
 )
