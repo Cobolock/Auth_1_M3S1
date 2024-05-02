@@ -2,10 +2,10 @@ name: Test Auth API
 
 on:
   push:
-    branches:
-      - main
-      - master
+    branches: [master]
+    paths: ["auth/**"]
   pull_request:
+    paths: ["auth/**"]
 
 jobs:
   lint:

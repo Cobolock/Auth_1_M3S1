@@ -1,56 +1,103 @@
-version: '3.8'
-
+version: "3.9"
+name: practicum
 services:
-  postgres:
+
+  etl:
+    build:
+      context: etl
+      target: production
+    env_file:
+      - etl/.env.docker
+    volumes:
+      - etl_data:/data
+    depends_on:
+      movies-postgres:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
+    profiles:
+      - etl
+
+  movies-api:
+    build:
+      context: movies_api
+      target: production
+    env_file:
+      - movies_api/.env.docker
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    profiles:
+      - movies-api
+
+  movies-api-nginx:
+    image: nginx:1.25-alpine
+    volumes:
+      - ./infra/movies-api-nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./infra/movies-api-nginx/configs:/etc/nginx/conf.d:ro
+    ports:
+      - "80:80"
+    profiles:
+      - movies-api
+    depends_on:
+      movies-api:
+        condition: service_started
+
+  movies-postgres:
     image: postgres:16-alpine
     env_file:
-      - infra/postgres/.env
+      - infra/movies-postgres/.env.docker
     volumes:
-      - postgres-data:/data/postgres
+      - ./infra/movies-postgres/pg_dump.sql:/docker-entrypoint-initdb.d/pg_dump.sql
+      - movies_postgres_data:/data/postgres
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U auth_user -d auth_db" ]
+      test: [ "CMD-SHELL", "pg_isready -U app -d movies_database" ]
       interval: 5s
       timeout: 5s
       retries: 5
-    deploy:
-      restart_policy:
-        condition: on-failure
-        delay: 5s
-        max_attempts: 3
+    profiles:
+      - infra
 
-  redis:
+  movies-redis:
     image: redis:7-alpine
-    command: redis-server --save 60 1 --loglevel warning
+    profiles:
+      - infra
+
+  elasticsearch:
+    image: elasticsearch:8.12.2
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
     volumes:
-      - redis-data:/data
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    healthcheck:
+      test: curl -u elastic:elastic -s -f elasticsearch:9200/_cat/health >/dev/null || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
     deploy:
-      restart_policy:
-        condition: on-failure
-        delay: 5s
-        max_attempts: 3
+      resources:
+        limits:
+          cpus: '1.00'
+          memory: 1GB
+        reservations:
+          cpus: '0.50'
+          memory: 1GB
+    profiles:
+      - infra
 
-  auth-api:
-    build:
-      context: .
-      target: production
-    env_file:
-      - ./envs/.env.docker
+  init-elasticsearch:
+    image: curlimages/curl:8.6.0
+    command: /bin/sh /data/create_indexes.sh http://elasticsearch:9200
     volumes:
-      - .:/app
+      - ./infra/elasticsearch/:/data/
     depends_on:
-      postgres:
+      elasticsearch:
         condition: service_healthy
-
-  nginx:
-    image: nginx:1.21.3-alpine
-    ports:
-      - "80:80"
-    volumes:
-      - ./infra/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./infra/nginx/conf.d:/etc/nginx/conf.d:ro
-    depends_on:
-      - auth-api
+    profiles:
+      - infra
 
 volumes:
-  postgres-data:
-  redis-data:
+  etl_data:
+  movies_postgres_data:
+  elasticsearch_data:
