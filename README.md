@@ -33,8 +33,6 @@ COMPOSE_PROFILES=etl,movies-api,movies-admin,auth docker-compose -f docker-compo
 COMPOSE_PROFILES=etl,movies-api,movies-admin,auth docker-compose -f docker-compose.yml -f docker-compose.override.yml down -v
 ```
 
-
-
 ## Запуск (Production)
 
 Сервис авторизации

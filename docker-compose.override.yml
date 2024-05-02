@@ -14,9 +14,18 @@ services:
       - "9200:9200"
       - "9300:9300"
 
+  # ETL
+
+  etl:
+    volumes:
+      - etl_data:/data
+      - ./etl:/app
+
   # Movies API
 
   movies-api:
+    volumes:
+      - ./movies_api:/app
     ports:
       - "8000:8000"
 
@@ -27,12 +36,17 @@ services:
   # Movies Admin
 
   movies-admin:
+    volumes:
+      - movies_admin_static_data:/opt/static:rw
+      - ./movies_admin:/opt/app
     ports:
       - "8001:8000"
 
   # Auth
 
   auth-api:
+    volumes:
+      - ./auth:/app
     ports:
       - "8002:8000"
 
@@ -43,14 +57,3 @@ services:
   auth-postgres:
     ports:
       - "5433:5432"
-
-  # Monitoring
-
-  kibana:
-    image: kibana:8.12.2
-    environment:
-      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
-    ports:
-      - "5601:5601"
-    profiles:
-      - monitoring
