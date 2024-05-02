@@ -1,4 +1,4 @@
-name: Test Movies API
+name: Movies API
 
 on:
   push:

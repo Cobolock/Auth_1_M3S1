@@ -1,4 +1,4 @@
-name: Test Auth API
+name: Auth API
 
 on:
   push:
@@ -47,6 +47,9 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: auth
     permissions: write-all
     steps:
 
