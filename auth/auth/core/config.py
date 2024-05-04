@@ -53,6 +53,16 @@ class JWTSettings(BaseSettings):
     authjwt_secret_key: str = Field(..., alias="JWT_SECRET")
 
 
+class JaegerSettings(BaseSettings):
+    """Настройки Jaeger."""
+
+    model_config = SettingsConfigDict(extra="ignore")
+
+    console_output: bool = Field(False, alias="JAEGER_CONSOLE_OUTPUT")  # noqa: FBT003
+    agent_host: str | None = Field(None, alias="JAEGER_AGENT_HOST")
+    agent_port: int | None = Field(None, alias="JAEGER_AGENT_PORT")
+
+
 env_path = Path(__file__).parent.parent.parent / "envs"
 env_filename = ".env.test" if "pytest" in sys.modules else ".env"
 env_file = env_path / env_filename
@@ -61,3 +71,4 @@ pg_config = PostgresConfig(_env_file=env_file)
 redis_config = RedisConfig(_env_file=env_file)
 extra_config = ExtraConfig(_env_file=env_file)
 jwt_settings = JWTSettings(_env_file=env_file)
+jaeger_settings = JaegerSettings(_env_file=env_file)

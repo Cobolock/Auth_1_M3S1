@@ -5,12 +5,14 @@ import uvicorn
 
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
+from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 
 from auth.api.v1.login_history import router as login_history_router
 from auth.api.v1.permissions import router as permissions_router
 from auth.api.v1.roles import router as roles_router
 from auth.api.v1.user_auth import router as user_auth_router
 from auth.api.v1.user_roles import router as user_roles_router
+from auth.core.tracing import tracer_provider
 from auth.db.redis import redis
 
 
@@ -29,6 +31,8 @@ app = FastAPI(
     default_response_class=ORJSONResponse,
     debug=True,
 )
+FastAPIInstrumentor.instrument_app(app, tracer_provider=tracer_provider)
+
 app.include_router(permissions_router, prefix="/api/v1/permissions", tags=["Ограничения"])
 app.include_router(roles_router, prefix="/api/v1/roles", tags=["Роли"])
 app.include_router(login_history_router, prefix="/api/v1/user", tags=["История входов"])
