@@ -1,11 +1,15 @@
 from collections.abc import AsyncGenerator
 
+from opentelemetry.instrumentation.sqlalchemy import SQLAlchemyInstrumentor
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 from auth.core.config import pg_config
 from auth.models.base import Base
 
 engine = create_async_engine(pg_config.dsn, echo=True, future=True)
+SQLAlchemyInstrumentor().instrument(
+    engine=engine.sync_engine, service="auth-api", enable_commenter=True, commenter_options={}
+)
 async_session = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
 

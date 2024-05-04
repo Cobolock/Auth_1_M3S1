@@ -7,6 +7,7 @@
 - `movies-api`
 - `movies-admin`
 - `auth`
+  - `auth-infra`
 
 Запустить сервис авторизации можно следующей командой:
 
@@ -61,3 +62,4 @@ COMPOSE_PROFILES=etl,movies-api,movies-admin,auth docker-compose up --build -d
 | Auth API (Nginx)     | http://127.0.0.1:7002/api/docs                              | http://auth-api-nginx:80/api/docs                               |
 | Auth PostgreSQL      | `postgres://auth_user:auth_password@localhost:5433/auth_db` | `postgres://auth_user:auth_password@auth-postgres:5432/auth_db` |
 | Auth Redis           | `redis://localhost:6380`                                    | `redis://auth-redis:6379`                                       |
+| Jaeger UI            | http://127.0.0.1:16686/search                               | http://auth-jaeger:16686/search                                 |
