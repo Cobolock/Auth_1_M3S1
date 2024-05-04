@@ -70,7 +70,6 @@ class UserService:
 
     async def login(self, creds: UserCredentials) -> JWTPair:
         user = await self.check_creds(creds)
-        print(user.roles)
         extra_claims = {
             "id": str(user.id),
             "first_name": user.first_name,
