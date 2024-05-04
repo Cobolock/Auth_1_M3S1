@@ -5,7 +5,7 @@ import uvicorn
 
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
-from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
+from opentelemetry.instrumentation.asgi import OpenTelemetryMiddleware
 
 from auth.api.v1.login_history import router as login_history_router
 from auth.api.v1.permissions import router as permissions_router
@@ -31,7 +31,11 @@ app = FastAPI(
     default_response_class=ORJSONResponse,
     debug=True,
 )
-FastAPIInstrumentor.instrument_app(app, tracer_provider=tracer_provider)
+app.add_middleware(
+    OpenTelemetryMiddleware,  # type: ignore[arg-type]
+    tracer_provider=tracer_provider,
+    http_capture_headers_server_request=["X-Request-Id"],
+)
 
 app.include_router(permissions_router, prefix="/api/v1/permissions", tags=["Ограничения"])
 app.include_router(roles_router, prefix="/api/v1/roles", tags=["Роли"])
