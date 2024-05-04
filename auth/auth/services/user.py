@@ -43,7 +43,7 @@ class UserService:
             raise UsernameInUseError from None
 
     async def check_creds(self, creds: UserCredentials) -> User | None:
-        user = await self.user_repo.get_by_username_or_none(creds.username)
+        user = await self.user_repo.get_by_username_or_none(creds.username, with_roles=True)
         if not user:
             raise NotAuthorizedError
         if not check_password_hash(user.password, creds.password + extra_config.salt):
@@ -70,10 +70,12 @@ class UserService:
 
     async def login(self, creds: UserCredentials) -> JWTPair:
         user = await self.check_creds(creds)
+        print(user.roles)
         extra_claims = {
             "id": str(user.id),
             "first_name": user.first_name,
             "last_name": user.last_name,
+            "roles": [role.id for role in user.roles],
         }
         jwt = await self.jwt_service.generate(subject=creds.username, user_claims=extra_claims)
         await self.cache_token(creds.username, jwt.RT)
