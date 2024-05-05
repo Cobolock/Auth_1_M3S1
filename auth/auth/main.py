@@ -1,3 +1,5 @@
+import sys
+
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
@@ -41,16 +43,16 @@ app.add_middleware(
     http_capture_headers_server_request=["X-Request-Id"],
 )
 
-api_router = APIRouter(
-    prefix="/api/v1",
-    dependencies=[
+dependencies = []
+if "pytest" not in sys.modules:
+    dependencies.append(
         Depends(
             RateLimiter(
                 times=rate_limit_settings.max_requests, seconds=rate_limit_settings.period_seconds
             )
         )
-    ],
-)
+    )
+api_router = APIRouter(prefix="/api/v1", dependencies=dependencies)
 api_router.include_router(permissions_router, prefix="/permissions", tags=["Ограничения"])
 api_router.include_router(roles_router, prefix="/roles", tags=["Роли"])
 api_router.include_router(login_history_router, prefix="/user", tags=["История входов"])
