@@ -74,6 +74,7 @@ class UserService:
             "id": str(user.id),
             "first_name": user.first_name,
             "last_name": user.last_name,
+            "enabled": user.enabled,
             "roles": [role.id for role in user.roles],
         }
         jwt = await self.jwt_service.generate(subject=creds.username, user_claims=extra_claims)
