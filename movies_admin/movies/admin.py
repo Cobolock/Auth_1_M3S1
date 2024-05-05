@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import Genre, Filmwork, GenreFilmwork, Person, PersonFilmwork
-from users.models import Profile
+from users.models import Profile, UserPermission, UserRole
 
 
 @admin.register(Genre)
@@ -15,6 +15,8 @@ class PersonAdmin(admin.ModelAdmin):
     search_fields = ("full_name", "id")
 
 admin.site.register(Profile)
+admin.site.register(UserPermission)
+admin.site.register(UserRole)
 
 
 class GenreFilmworkInline(admin.TabularInline):

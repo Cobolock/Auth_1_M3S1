@@ -6,7 +6,6 @@ from django.utils.translation import gettext_lazy as _
 from psqlextra.indexes import UniqueIndex
 
 
-
 class TimeStampedMixin(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
@@ -104,4 +103,3 @@ class PersonFilmwork(UUIDMixin):
         indexes = [
             UniqueIndex(fields=["film_work", "person", "role"], name="film_work_person_role_idx")
         ]
-

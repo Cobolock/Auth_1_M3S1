@@ -18,7 +18,7 @@ class Roles(StrEnum):
     ADMIN = auto()
     SUBSCRIBER = auto()
     STAFF = auto()
-    
+
 
 class CustomBackend(BaseBackend):
     def authenticate(self, request, username=None, password=None) -> UserType | None:
