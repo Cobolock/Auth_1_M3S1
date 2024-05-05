@@ -26,7 +26,6 @@ class Role(Base, AuditMixin):
 
     id: Mapped[str] = mapped_column(primary_key=True)
     name: Mapped[str]
-    # add new field - FK
     permissions: Mapped[list[Permission]] = relationship(
         secondary=role_permission_association, lazy="selectin"
     )
