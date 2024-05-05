@@ -1,10 +1,7 @@
 import uuid
 
-from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 from psqlextra.indexes import UniqueIndex
 
@@ -108,19 +105,3 @@ class PersonFilmwork(UUIDMixin):
             UniqueIndex(fields=["film_work", "person", "role"], name="film_work_person_role_idx")
         ]
 
-
-class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
-    uuid = models.UUIDField(unique=True, null=True)
-
-    def __str__(self) -> str:
-        return self.user.username
-
-@receiver(post_save, sender=User)
-def create_user_profile(sender, instance, created, **kwargs):
-    if created:
-        Profile.objects.create(user=instance)
-
-@receiver(post_save, sender=User)
-def save_user_profile(sender, instance, **kwargs):
-    instance.profile.save()

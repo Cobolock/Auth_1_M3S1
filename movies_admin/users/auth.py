@@ -9,7 +9,7 @@ from django.contrib.auth.backends import BaseBackend
 from django.contrib.auth.models import User as UserType
 from django.contrib.auth import get_user_model
 
-from movies.models import Profile
+from users.models import Profile
 
 User = get_user_model()
 
@@ -41,10 +41,10 @@ class CustomBackend(BaseBackend):
         try:
             profile = Profile.objects.filter(uuid=token['id']).first()
             if profile:
-                user = User.objects.get(profile__uuid=token['id'])
+                user = User.objects.get(auth_profile__uuid=token['id'])
             if not profile:
                 user = User.objects.create()
-                user.profile.uuid = token.get('id')
+                user.auth_profile.uuid = token.get('id')
                 user.username = token.get('sub')
                 user.first_name = token.get('first_name') or ''
                 user.last_name = token.get('last_name', '') or ''
