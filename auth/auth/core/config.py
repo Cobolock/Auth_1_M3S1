@@ -63,6 +63,15 @@ class JaegerSettings(BaseSettings):
     agent_port: int | None = Field(None, alias="JAEGER_AGENT_PORT")
 
 
+class RateLimitSettings(BaseSettings):
+    """Настройки лимитов запросов."""
+
+    model_config = SettingsConfigDict(extra="ignore")
+
+    max_requests: int = Field(100, alias="RATE_LIMIT_MAX_REQUESTS")
+    period_seconds: int = Field(60, alias="RATE_LIMIT_PERIOD_SECONDS")
+
+
 env_path = Path(__file__).parent.parent.parent / "envs"
 env_filename = ".env.test" if "pytest" in sys.modules else ".env"
 env_file = env_path / env_filename
@@ -72,3 +81,4 @@ redis_config = RedisConfig(_env_file=env_file)
 extra_config = ExtraConfig(_env_file=env_file)
 jwt_settings = JWTSettings(_env_file=env_file)
 jaeger_settings = JaegerSettings(_env_file=env_file)
+rate_limit_settings = RateLimitSettings(_env_file=env_file)
