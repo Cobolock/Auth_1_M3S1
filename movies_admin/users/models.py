@@ -10,6 +10,8 @@ from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 import requests
 
+from movies.models import Filmwork
+
 
 class UUIDMixin(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -82,6 +84,9 @@ class UserPermission(UUIDMixin):
 class UserRole(UUIDMixin):
     name = models.CharField(max_length=150)
 
+    def __str__(self) -> str:
+        return self.name
+
     class Meta:
         verbose_name = _("user_role")
         verbose_name_plural = _("user_roles")
@@ -92,3 +97,15 @@ class UserRolePermissions(UUIDMixin):
 
     def __str__(self):
         return f"{self.role} ({self.permission})"
+
+
+class FilmworkPermission(UUIDMixin):
+    film_work = models.ForeignKey("movies.Filmwork", on_delete=models.CASCADE)
+    permission = models.ForeignKey("UserPermission", on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.film_work} ({self.permission})"
+
+    class Meta:
+        verbose_name = _("film_permission")
+        verbose_name_plural = _("film_permissions")
