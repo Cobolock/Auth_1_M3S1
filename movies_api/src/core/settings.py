@@ -22,5 +22,7 @@ class Settings(BaseSettings):
     # pagination
     default_page_size: int = 50
 
+    # JWT
+    jwt_secret: str
 
 settings = Settings(_env_file=PROJECT_ROOT / ".env")
