@@ -18,14 +18,14 @@ class SocialServiceRepository:
 
     async def get_user(
         self, social_id: str, social_name: str, username: str, first_name: str, last_name
-    ) -> User:
+    ) -> User | None:
         # Проверка наличия Аккаунта социальной сети у пользователя
-        result = await self._session.execute(
+        result_account = await self._session.execute(
             select(SocialAccount).where(
                 SocialAccount.social_id == social_id, SocialAccount.social_name == social_name
             )
         )
-        social_account = result.scalars().first()
+        social_account = result_account.scalars().first()
         # Если аккаунт существует, то возвращаем его пользователя
         if social_account:
             result = await self._session.execute(
