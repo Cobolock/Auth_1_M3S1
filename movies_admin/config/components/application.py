@@ -17,6 +17,7 @@ INSTALLED_APPS = [
     "django_extensions",
     "corsheaders",
     "movies.apps.MoviesConfig",
+    "users"
 ]
 
 MIDDLEWARE = [

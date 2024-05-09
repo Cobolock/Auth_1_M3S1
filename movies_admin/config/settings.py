@@ -11,4 +11,5 @@ include(
     "components/i18n.py",
     "components/logging.py",
     "components/corsheaders.py",
+    "components/auth_backends.py",
 )

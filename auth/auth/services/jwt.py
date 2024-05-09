@@ -33,8 +33,8 @@ class JWTService:
         self.AT: str
         self.RT: str
 
-    async def generate(self, subject) -> JWTPair:
-        self.AT = await self._jwt.create_access_token(subject=subject)
+    async def generate(self, subject, user_claims=None) -> JWTPair:
+        self.AT = await self._jwt.create_access_token(subject=subject, user_claims=user_claims)
         self.RT = await self._jwt.create_refresh_token(subject=subject)
         return JWTPair(self.AT, self.RT)
 
