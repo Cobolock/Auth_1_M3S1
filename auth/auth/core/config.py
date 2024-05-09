@@ -49,7 +49,6 @@ class JWTSettings(BaseSettings):
     """Параметры конфигурации JWT."""
 
     model_config = SettingsConfigDict(extra="ignore")
-
     authjwt_secret_key: str = Field(..., alias="JWT_SECRET")
 
 
@@ -72,6 +71,16 @@ class RateLimitSettings(BaseSettings):
     period_seconds: int = Field(60, alias="RATE_LIMIT_PERIOD_SECONDS")
 
 
+class YandexAuthSettings(BaseSettings):
+    """Настройки для подключения приложения к Яндекс ID."""
+
+    model_config = SettingsConfigDict(extra="ignore")
+
+    yandex_client_id: str = Field(..., alias="YANDEX_CLIENT_ID")
+    yandex_client_secret: str = Field(..., alias="YANDEX_CLIENT_SECRET")
+    yandex_redirect_uri: str = Field(..., alias="YANDEX_REDIRECT_URI")
+
+
 env_path = Path(__file__).parent.parent.parent / "envs"
 env_filename = ".env.test" if "pytest" in sys.modules else ".env"
 env_file = env_path / env_filename
@@ -82,3 +91,4 @@ extra_config = ExtraConfig(_env_file=env_file)
 jwt_settings = JWTSettings(_env_file=env_file)
 jaeger_settings = JaegerSettings(_env_file=env_file)
 rate_limit_settings = RateLimitSettings(_env_file=env_file)
+yandex_auth_settings = YandexAuthSettings(_env_file=env_file)

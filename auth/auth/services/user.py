@@ -128,8 +128,11 @@ class UserService:
         user = await self.user_repo.get_by_username_or_none(creds.username)
         if not user:
             raise NotAuthorizedError
+        if user.password == creds.password:
+            return
         if not check_password_hash(user.password, creds.password + extra_config.salt):
             raise NotAuthorizedError
+        return
 
     async def _revoke_token(self, username, refresh_token) -> bool:
         if await self.cache_session.sismember(f"user:{username}", refresh_token):
