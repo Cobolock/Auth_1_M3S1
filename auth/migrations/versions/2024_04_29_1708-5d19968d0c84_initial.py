@@ -89,6 +89,28 @@ def upgrade() -> None:
         sa.ForeignKeyConstraint(["role_id"], ["roles.id"], ondelete="CASCADE"),
     )
     op.create_table(
+        "social_account",
+        sa.Column("user_id", sa.Uuid(), nullable=False),
+        sa.Column("social_id", sa.String(), nullable=False),
+        sa.Column("social_name", sa.String(), nullable=False),
+        sa.Column("id", sa.Uuid(), nullable=False),
+        sa.Column(
+            "created_at",
+            sa.DateTime(timezone=True),
+            server_default=sa.text("now()"),
+            nullable=False,
+        ),
+        sa.Column(
+            "updated_at",
+            sa.DateTime(timezone=True),
+            server_default=sa.text("now()"),
+            nullable=False,
+        ),
+        sa.ForeignKeyConstraint(["user_id"], ["users.id"], ondelete="CASCADE"),
+        sa.PrimaryKeyConstraint("id"),
+        sa.UniqueConstraint("social_id", "social_name", name="social_pk"),
+    )
+    op.create_table(
         "user_role_association",
         sa.Column("role_id", sa.String(), nullable=True),
         sa.Column("user_id", sa.Uuid(), nullable=True),
@@ -99,6 +121,7 @@ def upgrade() -> None:
 
 def downgrade() -> None:
     op.drop_table("user_role_association")
+    op.drop_table("social_account")
     op.drop_table("role_permission_association")
     op.drop_table("entries")
     op.drop_table("users")

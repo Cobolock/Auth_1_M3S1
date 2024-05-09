@@ -168,13 +168,16 @@ services:
       timeout: 5s
       retries: 5
     profiles:
-      - infra
+      - auth-infra
       - auth
 
   auth-redis:
     image: redis:7-alpine
     volumes:
       - auth_redis_data:/data
+    profiles:
+      - auth-infra
+      - auth
 
   auth-nginx:
     image: nginx:1.25-alpine
@@ -187,6 +190,15 @@ services:
       auth-api:
         condition: service_started
     profiles:
+      - auth
+
+  auth-jaeger:
+    image: jaegertracing/all-in-one:1.57
+    ports:
+      - "6831:6831/udp"
+      - "16686:16686"
+    profiles:
+      - auth-infra
       - auth
 
 volumes:
