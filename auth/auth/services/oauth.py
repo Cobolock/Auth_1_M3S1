@@ -1,7 +1,9 @@
 from typing import Annotated
 
 from dataclasses import dataclass
+
 import httpx
+
 from fastapi import Depends, status
 
 from auth.core.config import yandex_auth_settings

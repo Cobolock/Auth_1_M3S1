@@ -1,4 +1,3 @@
-import base64
 import sys
 
 from pathlib import Path

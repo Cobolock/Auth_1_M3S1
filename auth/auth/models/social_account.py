@@ -1,4 +1,5 @@
-"""
+"""Логика использования модели.
+
 В этой таблице необходимо хранить как минимум id пользователя в социальном
 сервисе social_id и название поставщика услуг social_name.
 social_id можно запрашивать у Поставщика услуг наравне с username или email, а
@@ -10,12 +11,13 @@ social_id можно запрашивать у Поставщика услуг �
 вашей базе уже создан и его можно найти по user_id.
 """
 
+from sqlalchemy import ForeignKey, UniqueConstraint
+from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import Mapped, backref, mapped_column, relationship
+
 from auth.models.base import Base
 from auth.models.mixins import AuditMixin, UUIDPrimaryKeyMixin
 from auth.models.user import User
-from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy import ForeignKey, UniqueConstraint
-from sqlalchemy.orm import Mapped, mapped_column, relationship, backref
 
 
 class SocialAccount(Base, UUIDPrimaryKeyMixin, AuditMixin):

@@ -1,12 +1,15 @@
 from typing import Annotated
+
+from dataclasses import dataclass
+
 from fastapi import Depends
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from dataclasses import dataclass
+
+from auth.core.utils import generate_random_string
+from auth.db.postgres import get_session
 from auth.models.social_account import SocialAccount
 from auth.models.user import User
-from auth.db.postgres import get_session
-from auth.core.utils import generate_random_string
 
 
 @dataclass

@@ -1,4 +1,5 @@
-"""
+"""Описание работы OAuth.
+
 Для проверки работы OAuth следует использовать эндпоинт
 "http://localhost:8000/api/v1/user/login/yandex/" открытый во вкладке браузера
 в Приложении Яндекс ID указать Redirect URI
@@ -12,15 +13,16 @@
 """
 
 from typing import Annotated
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import RedirectResponse
-
-from auth.services.user import UserService
-from auth.services.oauth import YandexService
-from auth.core.utils import generate_random_string
-from auth.core.config import yandex_auth_settings
 from starlette.requests import Request
+
+from auth.core.config import yandex_auth_settings
+from auth.core.utils import generate_random_string
 from auth.schemas.user_auth import UserCredentials
+from auth.services.oauth import YandexService
+from auth.services.user import UserService
 
 router = APIRouter()
 
