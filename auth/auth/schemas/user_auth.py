@@ -3,7 +3,7 @@ from pydantic import BaseModel, Field
 
 class UserCredentials(BaseModel):
     username: str = Field(max_length=32)
-    password: str = Field(max_length=128)
+    password: str = Field(max_length=164)
 
 
 class UserRefresh(BaseModel):

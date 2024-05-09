@@ -24,8 +24,8 @@ class SocialAccount(Base, UUIDPrimaryKeyMixin, AuditMixin):
     user_id: Mapped[UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
     user: Mapped[User] = relationship(backref=backref("social_accounts", lazy=True))
 
-    social_id = Mapped[str]
-    social_name = Mapped[str]
+    social_id: Mapped[str]
+    social_name: Mapped[str]
     __table_args__ = (UniqueConstraint("social_id", "social_name", name="social_pk"),)
 
     def __repr__(self):

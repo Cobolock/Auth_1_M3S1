@@ -51,12 +51,6 @@ class JWTSettings(BaseSettings):
 
     model_config = SettingsConfigDict(extra="ignore")
     authjwt_secret_key: str = Field(..., alias="JWT_SECRET")
-    # update model for oauth
-    jwt_public_key: str = Field(..., alias="JWT_PUBLIC_KEY")
-    jwt_private_key: str = Field(..., alias="JWT_PRIVATE_KEY")
-    access_token_expires: int = Field(..., alias="ACCESS_TOKEN_EXPIRES")
-    refresh_token_expires: int = Field(..., alias="REFRESH_TOKEN_EXPIRES")
-    jwt_algorithm: str = Field(..., alias="JWT_ALGORITHM")
 
 
 class JaegerSettings(BaseSettings):
