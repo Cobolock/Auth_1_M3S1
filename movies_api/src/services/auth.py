@@ -10,7 +10,7 @@ class UserRoles(StrEnum):
 
 
 class JWTAuth:
-    def check_user_role(self, access_token, user_role_enum) -> bool:
+    def check_user_role(self, access_token: str | None, user_role_enum: str) -> bool:
         if not access_token:
             return False
         try:
