@@ -1,5 +1,3 @@
-import sys
-
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
@@ -41,11 +39,12 @@ app = FastAPI(
     default_response_class=ORJSONResponse,
     debug=True,
 )
-app.add_middleware(
-    OpenTelemetryMiddleware,  # type: ignore[arg-type]
-    tracer_provider=tracer_provider,
-    http_capture_headers_server_request=["X-Request-Id"],
-)
+if extra_config.enable_tracer:
+    app.add_middleware(
+        OpenTelemetryMiddleware,  # type: ignore[arg-type]
+        tracer_provider=tracer_provider,
+        http_capture_headers_server_request=["X-Request-Id"],
+    )
 app.add_middleware(
     TrustedHostMiddleware,  # type: ignore[arg-type]
     allowed_hosts=["*"],
@@ -65,7 +64,7 @@ app.add_middleware(
 )
 
 dependencies = []
-if "pytest" not in sys.modules:
+if extra_config.enable_rate_limiter:
     dependencies.append(
         Depends(
             RateLimiter(
