@@ -43,6 +43,8 @@ class ExtraConfig(BaseSettings):
     model_config = SettingsConfigDict(extra="ignore")
 
     salt: str = Field(..., alias="SALT")
+    enable_tracer: bool = Field(False, alias="ENABLE_TRACER")
+    enable_rate_limiter: bool = Field(False, alias="ENABLE_RATE_LIMITER")
 
 
 class JWTSettings(BaseSettings):
@@ -57,7 +59,7 @@ class JaegerSettings(BaseSettings):
 
     model_config = SettingsConfigDict(extra="ignore")
 
-    console_output: bool = Field(False, alias="JAEGER_CONSOLE_OUTPUT")  # noqa: FBT003
+    console_output: bool = Field(False, alias="JAEGER_CONSOLE_OUTPUT")
     agent_host: str | None = Field(None, alias="JAEGER_AGENT_HOST")
     agent_port: int | None = Field(None, alias="JAEGER_AGENT_PORT")
 
