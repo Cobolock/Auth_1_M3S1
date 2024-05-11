@@ -24,7 +24,10 @@ class CustomBackend(BaseBackend):
     def authenticate(self, request, username=None, password=None) -> UserType | None:
         url = settings.AUTH_API_LOGIN_URL
         payload = {'username': username, 'password': password}
-        response = requests.post(url, data=json.dumps(payload))
+        try:
+            response = requests.post(url, data=json.dumps(payload))
+        except requests.exceptions.ConnectionError:
+            return None
         if response.status_code != http.HTTPStatus.OK:
             return None
 
