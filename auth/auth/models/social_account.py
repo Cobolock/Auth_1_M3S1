@@ -11,6 +11,7 @@ social_id можно запрашивать у Поставщика услуг �
 вашей базе уже создан и его можно найти по user_id.
 """
 
+from enum import StrEnum, auto
 from sqlalchemy import ForeignKey, UniqueConstraint
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, backref, mapped_column, relationship
@@ -32,3 +33,6 @@ class SocialAccount(Base, UUIDPrimaryKeyMixin, AuditMixin):
 
     def __repr__(self):
         return f"<SocialAccount {self.social_name}:{self.user_id}>"
+
+class Providers(StrEnum):
+    YANDEX = auto()

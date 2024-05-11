@@ -17,6 +17,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from fastapi.responses import RedirectResponse
 
+from auth.models.social_account import Providers
 from auth.core.config import yandex_auth_settings
 from auth.core.utils import generate_random_string
 from auth.schemas.user_auth import UserCredentials
@@ -27,34 +28,39 @@ router = APIRouter()
 
 
 @router.get(
-    "/login/yandex",
+    "/login/{provider}",
     response_class=RedirectResponse,
     status_code=status.HTTP_202_ACCEPTED,
     summary="Войти с помощью Yandex OAuth",
     description="Переадресация запроса на Яндекс ID с целью подтверждения"
     " клиентом кода авторизации",
 )
-async def provider_login(request: Request) -> RedirectResponse:
+async def provider_login(provider: Providers, request: Request) -> RedirectResponse:
     state = generate_random_string()
     request.session["state"] = state
-    url = (
-        f"https://oauth.yandex.ru/authorize"
-        f"?response_type=code"
-        f"&client_id={yandex_auth_settings.yandex_client_id}"
-        f"&redirect_uri={yandex_auth_settings.yandex_redirect_uri}"
-        f"&state={state}"
-    )
+    match provider:
+        case Providers.YANDEX:
+            url = (
+                f"https://oauth.yandex.ru/authorize"
+                f"?response_type=code"
+                f"&client_id={yandex_auth_settings.yandex_client_id}"
+                f"&redirect_uri={yandex_auth_settings.yandex_redirect_uri}"
+                f"&state={state}"
+            )
+        case _:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="OAuth provider unknown")
     return RedirectResponse(url)
 
 
 @router.get(
-    "/login/yandex/redirect",
+    "/login/{provider}/redirect",
     status_code=status.HTTP_201_CREATED,
     summary="Получить токены с помощью Yandex OAuth",
     description="Переадресация запроса на Яндекс ID с целью подтверждения"
     "клиентом кода авторизации",
 )
 async def yandex_login_redirect(
+    provider: str,
     code: str,
     state: str,
     request: Request,
@@ -63,7 +69,11 @@ async def yandex_login_redirect(
 ) -> dict:
     if state != request.session["state"]:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="State check failed")
-    user = await yandex_service.get_user(code)
+    match provider:
+        case Providers.YANDEX:
+            user = await yandex_service.get_user(code)
+        case _:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="OAuth provider unknown")
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Confirm code error")
     credentials = UserCredentials(username=user.username, password=user.password)
