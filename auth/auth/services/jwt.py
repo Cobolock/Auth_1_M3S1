@@ -33,12 +33,14 @@ class JWTService:
         self.AT: str
         self.RT: str
 
-    async def generate(self, subject, user_claims=None) -> JWTPair:
-        self.AT = await self._jwt.create_access_token(subject=subject, user_claims=user_claims)
+    async def generate(self, subject: str, user_claims: dict[str, Any] | None = None) -> JWTPair:
+        self.AT = await self._jwt.create_access_token(
+            subject=subject, user_claims=user_claims or {}
+        )
         self.RT = await self._jwt.create_refresh_token(subject=subject)
         return JWTPair(self.AT, self.RT)
 
-    async def get_payload(self, refresh_token) -> dict[str, Any]:
+    async def get_payload(self, refresh_token: str) -> dict[str, Any]:
         try:
             return await self._jwt.get_raw_jwt(refresh_token)
         except JWTDecodeError:
@@ -46,7 +48,7 @@ class JWTService:
         except ValueError:
             raise TokenMalformedError from None
 
-    async def get_sub(self, refresh_token) -> str:
+    async def get_sub(self, refresh_token: str) -> str:
         try:
             payload = await self.get_payload(refresh_token)
         except JWTDecodeError:

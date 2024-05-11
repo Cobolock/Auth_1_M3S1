@@ -11,13 +11,10 @@ from auth.models.user import User
 
 class Entry(UUIDPrimaryKeyMixin, Base):
     __tablename__ = "entries"
-    __table_args__ = {
-        'postgresql_partition_by': 'RANGE (created)'
-    }
+    __table_args__ = {"postgresql_partition_by": "RANGE (created)"}  # noqa: RUF012
 
     created: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), primary_key=True,
-        server_default=func.now(), default=func.now()
+        DateTime(timezone=True), primary_key=True, server_default=func.now(), default=func.now()
     )
     ip_address: Mapped[str]
     location: Mapped[str]

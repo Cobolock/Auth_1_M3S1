@@ -1,4 +1,4 @@
-"""empty message
+"""Login entries partitioning
 
 Revision ID: 7670977b4a8c
 Revises: 9a2e8848d8c3
@@ -33,7 +33,6 @@ def upgrade() -> None:
             id uuid NOT NULL
         )
         PARTITION BY RANGE (created)"""))
-    connection.execute(sa.DDL("""ALTER TABLE entries OWNER TO auth_user"""))
     connection.execute(sa.DDL("""ALTER TABLE ONLY entries
             ADD CONSTRAINT entries_pkey PRIMARY KEY (id, created)"""))
     connection.execute(sa.DDL("""ALTER TABLE entries

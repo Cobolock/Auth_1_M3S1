@@ -48,7 +48,6 @@ class UserService:
         except ObjectAlreadyExistsError:
             raise UsernameInUseError from None
 
-
     @tracer.start_as_current_span("change_auth")
     async def change_auth(self, username: str, creds: UserCredentials) -> None:
         current_span = trace.get_current_span()

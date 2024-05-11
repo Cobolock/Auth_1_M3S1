@@ -14,9 +14,8 @@
 
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from fastapi.responses import RedirectResponse
-from starlette.requests import Request
 
 from auth.core.config import yandex_auth_settings
 from auth.core.utils import generate_random_string
