@@ -12,6 +12,7 @@ social_id можно запрашивать у Поставщика услуг �
 """
 
 from enum import StrEnum, auto
+
 from sqlalchemy import ForeignKey, UniqueConstraint
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, backref, mapped_column, relationship

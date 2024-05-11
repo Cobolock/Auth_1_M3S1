@@ -1,10 +1,11 @@
 from enum import StrEnum, auto
-from jose import jwt, JWTError
+
+from jose import JWTError, jwt
 
 from core.settings import settings
 
 
-class user_roles(StrEnum):
+class UserRoles(StrEnum):
     SUBSCRIBER = auto()
 
 
@@ -16,9 +17,8 @@ class JWTAuth:
             self.data = jwt.decode(
                 token=access_token,
                 key=settings.jwt_secret,
-                algorithms='HS256',
+                algorithms="HS256",
             )
         except JWTError:
             raise
-        print(self.data.get('roles'), user_role_enum, flush=True)
-        return user_role_enum in self.data.get('roles')
+        return user_role_enum in self.data.get("roles")

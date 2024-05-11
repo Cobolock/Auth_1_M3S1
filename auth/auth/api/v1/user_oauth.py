@@ -17,9 +17,9 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import RedirectResponse
 
-from auth.models.social_account import Providers
 from auth.core.config import yandex_auth_settings
 from auth.core.utils import generate_random_string
+from auth.models.social_account import Providers
 from auth.schemas.user_auth import UserCredentials
 from auth.services.oauth import YandexService
 from auth.services.user import UserService
@@ -31,8 +31,8 @@ router = APIRouter()
     "/login/{provider}",
     response_class=RedirectResponse,
     status_code=status.HTTP_202_ACCEPTED,
-    summary="Войти с помощью Yandex OAuth",
-    description="Переадресация запроса на Яндекс ID с целью подтверждения"
+    summary="Войти с помощью OAuth",
+    description="Переадресация запроса на сервис-провайдер OAuth с целью подтверждения"
     " клиентом кода авторизации",
 )
 async def provider_login(provider: Providers, request: Request) -> RedirectResponse:
@@ -55,11 +55,11 @@ async def provider_login(provider: Providers, request: Request) -> RedirectRespo
 @router.get(
     "/login/{provider}/redirect",
     status_code=status.HTTP_201_CREATED,
-    summary="Получить токены с помощью Yandex OAuth",
-    description="Переадресация запроса на Яндекс ID с целью подтверждения"
+    summary="Получить токены с помощью OAuth",
+    description="Переадресация запроса на сервис-провайдер OAuth с целью подтверждения"
     "клиентом кода авторизации",
 )
-async def yandex_login_redirect(
+async def provider_login_redirect(
     provider: str,
     code: str,
     state: str,
