@@ -1,10 +1,7 @@
 from django.contrib import admin
-from .models import Genre, Filmwork, GenreFilmwork, Person, PersonFilmwork
-from users.models import (
-    Profile, UserPermission,
-    UserRole, FilmworkPermission,
-    UserRolePermissions
-)
+from users.models import FilmworkPermission, Profile, UserPermission, UserRole, UserRolePermissions
+
+from .models import Filmwork, Genre, GenreFilmwork, Person, PersonFilmwork
 
 
 @admin.register(Genre)

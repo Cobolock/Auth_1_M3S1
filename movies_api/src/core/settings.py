@@ -25,4 +25,5 @@ class Settings(BaseSettings):
     # JWT
     jwt_secret: str
 
+
 settings = Settings(_env_file=PROJECT_ROOT / ".env")

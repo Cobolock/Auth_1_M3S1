@@ -8,7 +8,7 @@ from api.v1.schemas.films import FilmDetailsSchema, FilmShortSchema
 from core.settings import settings
 from models.film import Film
 from models.value_objects import FilmID
-from services.auth import JWTAuth, user_roles
+from services.auth import JWTAuth, UserRoles
 from services.film import BaseFilmService, ElasticsearchFilmService
 
 router = APIRouter()
@@ -30,11 +30,11 @@ async def get_film_list(
     access_token: str | None = None,
     genre: str | None = None,
 ) -> list[Film]:
-    if not auth_service.check_user_role(access_token, user_roles.SUBSCRIBER):
+    if not auth_service.check_user_role(access_token, UserRoles.SUBSCRIBER):
         pagination_params.page_number = 1
         pagination_params.page_size = 10
-        sort_params.sort = 'imdb_rating'
-        genre = ''
+        sort_params.sort = "imdb_rating"
+        genre = ""
     return await film_service.get_list(
         page=pagination_params.page_number,
         size=pagination_params.page_size,
@@ -59,10 +59,10 @@ async def search_films(
     access_token: str | None = None,
     query: str | None = None,
 ) -> list[Film]:
-    if not auth_service.check_user_role(access_token, user_roles.SUBSCRIBER):
+    if not auth_service.check_user_role(access_token, UserRoles.SUBSCRIBER):
         pagination_params.page_number = 1
         pagination_params.page_size = 1
-        query = ''
+        query = ""
     return await film_service.search(
         query=query,
         page=pagination_params.page_number,

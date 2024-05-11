@@ -3,7 +3,6 @@ from django.db.models import OuterRef
 from django.http import JsonResponse
 from django.views.generic import DetailView
 from django.views.generic.list import BaseListView
-
 from movies.models import Filmwork, GenreFilmwork, PersonFilmwork
 
 
@@ -11,15 +10,13 @@ class MoviesApiMixin:
     http_method_names = ["get"]
 
     def get_queryset(self):
-        """
-        ArrayAgg генерирует JOIN 3 таблиц для каждой ArrayAgg в annotate.
+        """ArrayAgg генерирует JOIN 3 таблиц для каждой ArrayAgg в annotate.
         Для двух ArrayAgg (persons, genres) уже получается запрос с JOIN'ом
         из 5 таблиц. Django делает декартово произведение и в результирующих
         списках образуются дубликаты. Я считаю, что лучше иметь несколько
         простых JOIN'ов в подзапросах, чем один большой JOIN почти всех таблиц в БД
         с дальнейшей дедупликацией.
         """
-
         genres_names_subquery = GenreFilmwork.objects.filter(film_work_id=OuterRef("id")).values(
             "genre__name"
         )
