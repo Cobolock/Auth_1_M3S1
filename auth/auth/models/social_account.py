@@ -35,5 +35,6 @@ class SocialAccount(Base, UUIDPrimaryKeyMixin, AuditMixin):
     def __repr__(self):
         return f"<SocialAccount {self.social_name}:{self.user_id}>"
 
+
 class Providers(StrEnum):
     YANDEX = auto()

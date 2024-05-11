@@ -48,7 +48,9 @@ async def provider_login(provider: Providers, request: Request) -> RedirectRespo
                 f"&state={state}"
             )
         case _:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="OAuth provider unknown")
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="OAuth provider unknown"
+            )
     return RedirectResponse(url)
 
 
@@ -73,7 +75,9 @@ async def provider_login_redirect(
         case Providers.YANDEX:
             user = await yandex_service.get_user(code)
         case _:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="OAuth provider unknown")
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="OAuth provider unknown"
+            )
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Confirm code error")
     credentials = UserCredentials(username=user.username, password=user.password)
