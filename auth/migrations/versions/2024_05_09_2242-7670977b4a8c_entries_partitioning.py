@@ -1,4 +1,4 @@
-"""empty message
+"""Login entries partitioning
 
 Revision ID: 7670977b4a8c
 Revises: 9a2e8848d8c3
