@@ -1,14 +1,16 @@
-from http import HTTPStatus
 import json
 import uuid
-from django.db import models
+
+from http import HTTPStatus
+
+import requests
 
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
-import requests
 
 
 class UUIDMixin(models.Model):
@@ -54,9 +56,9 @@ class UserPermission(UUIDMixin):
     def save(self, *args, **kwargs):
         url = settings.AUTH_API_PERMISSION
         payload = {
-            'name': self.name,
-            'description': self.description,
-            'resource': self.resource
+            "name": self.name,
+            "description": self.description,
+            "resource": self.resource
         }
         from_api = requests.get(f"{url}/{self.id}")
         if from_api.status_code == HTTPStatus.OK:
@@ -68,7 +70,7 @@ class UserPermission(UUIDMixin):
             if response.status_code != HTTPStatus.CREATED:
                 return None
         data = response.json()
-        self.id = data.get('id')
+        self.id = data.get("id")
         return super(UserPermission, self).save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
@@ -76,18 +78,21 @@ class UserPermission(UUIDMixin):
         response = requests.delete(f"{url}/{self.id}")
         if response.status_code == HTTPStatus.NO_CONTENT:
             return super(UserPermission, self).delete(*args, **kwargs)
+        return None
 
 
 
 class UserRole(UUIDMixin):
     name = models.CharField(max_length=150)
 
-    def __str__(self) -> str:
-        return self.name
 
     class Meta:
         verbose_name = _("user_role")
         verbose_name_plural = _("user_roles")
+
+    def __str__(self) -> str:
+        return self.name
+
 
 class UserRolePermissions(UUIDMixin):
     role = models.ForeignKey("UserPermission", on_delete=models.CASCADE)
@@ -101,9 +106,10 @@ class FilmworkPermission(UUIDMixin):
     film_work = models.ForeignKey("movies.Filmwork", on_delete=models.CASCADE)
     permission = models.ForeignKey("UserPermission", on_delete=models.CASCADE)
 
-    def __str__(self):
-        return f"{self.film_work} ({self.permission})"
-
     class Meta:
         verbose_name = _("film_permission")
         verbose_name_plural = _("film_permissions")
+
+    def __str__(self):
+        return f"{self.film_work} ({self.permission})"
+
